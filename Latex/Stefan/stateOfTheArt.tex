@@ -1,0 +1,40 @@
+\section{State of the Art}
+
+This section examines the internal decision logic of prominent isolation-based algorithms. While these methods share the goal of isolating anomalies through recursive partitioning, they differ fundamentally in their \textbf{splitting strategies}—specifically in how they select the splitting dimensions, normal vectors, and cut points. The integration of this part of the algorithm is shared with the proposed model from the paper, FCF, and is described in Section \ref{forestConstruction} and Section \ref{scoring}.
+\subsubsection*{Isolation Forest(IF)}
+It uses axis-parallel splits with fully random selection.
+
+Node steps:
+\begin{itemize}
+    \item Randomly select a feature $j$ from the set of available dimensions $d$.
+    \item Randomly select a split value $v$ from a uniform distribution between the minimum and the maximum values of feature $j$ in the current node $(S)$: $$v \thicksim U(min(S_j),max(S_j))$$
+    \item \textbf{Branching Condition:} A data point $x$ is assigned to the left child node if $x_j<v$. Otherwise, it is assigned to the right child.
+\end{itemize}
+
+\subsubsection*{Extended Isolation Forest(EIF)}
+It uses random hyperplanes to handle anomalies that are not axis-aligned (oblique splits).
+
+Node steps:
+\begin{itemize}
+    \item Generate a random normal vector $n$ from a standard normal distribution $\mathcal{N}(0,1)$ for each dimension.
+    \item Project the data points onto this normal vector.
+    \item Select a random split point $p$ uniformly within the range of the projected values.
+    \item \textbf{Branching Condition:} A point $x$ goes to the left child if: $$(x-p)\cdot n \le 0$$
+\end{itemize}
+
+\subsubsection*{SCiForest(SCiF)}
+It uses guided hyperplanes. It aims to address the issue where random hyperplanes might pass through sparse regions without actually separating clusters. Unlike EIF, the choice of the normal vector is optimized rather than purely random.
+
+Node steps:
+\begin{itemize}
+    \item Generate a set of candidate hyperplanes $\{(n_1, p_1), \dots, (n_k, p_k)\}$ using the EIF approach.
+    \item For each candidate, calculate the \textbf{Standard Deviation Gain} ($\Delta\sigma$), which measures the reduction in dispersion:
+    $$\Delta\sigma = \sigma(S) - \frac{|S_L|}{|S|} \sigma(S_L) - \frac{|S_R|}{|S|} \sigma(S_R)$$
+    Where $\sigma(S)$ is the standard deviation of the projected points in the current node, and $S_L, S_R$ are the resulting subsets.
+    \item \textbf{Selection:} Alternatively, some implementations use a \textbf{Density-based} criterion to find sparse regions:
+    $$Gain = \frac{1}{\text{Density}(S_L) + \text{Density}(S_R)}$$
+    \item Select the specific hyperplane $(n_i,p_i)$ that maximizes this criterion.
+\end{itemize}
+
+
+

@@ -1,19 +1,20 @@
-\documentclass[12pt, a4paper]{article}
+\documentclass[11pt,a4paper]{article}
 
-% --- PREAMBLE (Packages and Settings) ---
+% Packages
 \usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{graphicx}
 \usepackage{geometry}
- \geometry{
- a4paper,
- total={170mm,257mm},
- left=20mm,
- top=20mm,
- }
-\usepackage{graphicx}  % For images
-\usepackage{hyperref}  % For clickable links
-\usepackage{titlesec}  % To customize headers
-\usepackage{amsmath, amsthm}
-\usepackage{amssymb}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+\usepackage{float}
+\usepackage{booktabs}
+\usepackage{titlesec} 
+
 
 
     % \setmathfont{XITS Math}
@@ -33,9 +34,9 @@
 % Use \input for standard sections. 
 % Use \include only if you need a guaranteed page break before and after (like chapters).
 
-
+\input{Stefan/stateOfTheArt.tex}
 \input{Stefan/algorithm.tex}
-
+\input{David/isotree_algorithm_overview.tex}
 
 
 % \input{sections/conclusion}

@@ -1,8 +1,23 @@
-\contentsline {section}{\numberline {1}Algorithm}{2}{section.1}%
-\contentsline {subsection}{\numberline {1.1}Node Splitting Mechanisms}{2}{subsection.1.1}%
-\contentsline {subsection}{\numberline {1.2}Forest Construction Algorithm}{3}{subsection.1.2}%
-\contentsline {subsection}{\numberline {1.3}Scoring and Anomaly Detection}{4}{subsection.1.3}%
-\contentsline {subsection}{\numberline {1.4}Complexity Analysis}{5}{subsection.1.4}%
-\contentsline {subsubsection}{\numberline {1.4.1}Training Time Complexity}{5}{subsubsection.1.4.1}%
-\contentsline {subsubsection}{\numberline {1.4.2}Scoring Time Complexity}{6}{subsubsection.1.4.2}%
-\contentsline {subsubsection}{\numberline {1.4.3}Space Complexity}{6}{subsubsection.1.4.3}%
+\contentsline {section}{\numberline {1}State of the Art}{2}{section.1}%
+\contentsline {section}{\numberline {2}Algorithm}{3}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Node Splitting Mechanisms}{3}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Forest Construction Algorithm}{4}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Scoring and Anomaly Detection}{5}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Complexity Analysis}{6}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Training Time Complexity}{6}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Scoring Time Complexity}{7}{subsubsection.2.4.2}%
+\contentsline {subsubsection}{\numberline {2.4.3}Space Complexity}{7}{subsubsection.2.4.3}%
+\contentsline {section}{\numberline {3}Implementation}{8}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Models defined}{8}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Multi-threading}{8}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Tree-level Parallelism}{8}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Prediction Parallelism}{8}{subsubsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.3}Optimizations}{8}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Data Structures}{9}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}IsoTree: Standard Node Structure}{9}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}IsoHPlane: Extended/Hyperplane Node}{9}{subsubsection.3.4.2}%
+\contentsline {subsubsection}{\numberline {3.4.3}IsoForest: Complete Model}{9}{subsubsection.3.4.3}%
+\contentsline {subsubsection}{\numberline {3.4.4}ExtIsoForest: Extended Model}{10}{subsubsection.3.4.4}%
+\contentsline {subsection}{\numberline {3.5}Design Rationale}{10}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}Flat Vector Storage}{10}{subsubsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.6}Benchmarks}{10}{subsection.3.6}%
