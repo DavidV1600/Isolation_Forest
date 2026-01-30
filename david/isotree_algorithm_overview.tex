@@ -1,0 +1,487 @@
+\documentclass[11pt,a4paper]{article}
+
+% Packages
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{amsmath,amssymb,amsthm}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{graphicx}
+\usepackage{geometry}
+\usepackage{enumitem}
+\usepackage{xcolor}
+\usepackage{listings}
+
+\geometry{margin=1in}
+
+% Code listing style
+\lstset{
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    frame=single
+}
+
+\title{\textbf{IsoTree: Algorithm Implementation Overview}\\[0.5em]
+\large Fair-Cut Forest (FCF) and Isolation Forest Variants}
+\author{David\\Based on: ``Revisiting randomized choices in isolation forests'' by David Cortes}
+\date{January 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+This document provides a technical overview of the \texttt{isotree} library implementation, focusing on the Fair-Cut Forest (FCF) algorithm proposed in arXiv:2110.13402. We cover the solver framework, computational complexity, parallelism strategies, and internal data structures used in the C++ implementation.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+%==============================================================================
+\section{Introduction}
+%==============================================================================
+
+The \texttt{isotree} library is a high-performance C++ implementation of Isolation Forest and its variants, including:
+\begin{itemize}
+    \item \textbf{iForest}: Original Isolation Forest (Liu et al., 2008)
+    \item \textbf{EIF}: Extended Isolation Forest (Hariri et al., 2019)
+    \item \textbf{SCiForest}: Split-Criterion Isolation Forest (Liu et al., 2010)
+    \item \textbf{FCF}: Fair-Cut Forest (Cortes, 2021)
+    \item \textbf{RRCF}: Robust Random Cut Forest (Guha et al., 2016)
+\end{itemize}
+
+The library provides Python, R, and C interfaces, with the core algorithms implemented in C++ for maximum performance.
+
+\textbf{Repository}: \url{https://github.com/david-cortes/isotree}
+
+%==============================================================================
+\section{Solver Framework}
+%==============================================================================
+
+\subsection{Core Algorithm: Fair-Cut Forest (FCF)}
+
+The FCF algorithm extends the isolation forest concept by using a \textbf{pooled standard deviation gain} criterion for split selection, as opposed to uniformly random splits (iForest) or averaged gain (SCiForest).
+
+\subsubsection{Pooled Gain Criterion}
+
+The key difference from SCiForest lies in the gain calculation:
+
+\begin{equation}
+\text{gain}_{\text{pooled}} = \frac{\sigma_{\text{all}} - \frac{n_{\text{left}} \cdot \sigma_{\text{left}} + n_{\text{right}} \cdot \sigma_{\text{right}}}{n_{\text{left}} + n_{\text{right}}}}{\sigma_{\text{all}}}
+\end{equation}
+
+Compared to SCiForest's averaged gain:
+\begin{equation}
+\text{gain}_{\text{avg}} = \frac{\sigma_{\text{all}} - \frac{\sigma_{\text{left}} + \sigma_{\text{right}}}{2}}{\sigma_{\text{all}}}
+\end{equation}
+
+The pooled gain tends to produce more \textbf{evenly-divided splits} and better handles \textbf{multimodal distributions} with clustered outliers.
+
+\subsubsection{Algorithm: FairCutTree}
+
+\begin{algorithm}[H]
+\caption{FairCutTree}
+\begin{algorithmic}[1]
+\Require Data points $X_{m \times n}$, number of splitting variables $p$, current depth $d$
+\If{$m = 1$}
+    \State Set as terminal node with depth $d$
+\EndIf
+\If{all columns have identical values}
+    \State Set as terminal node with depth $d + \mathbb{E}[\text{depth}(m)]$
+\EndIf
+\State Initialize $\mathbf{z} := \mathbf{0}_m$
+\For{$i = 1$ to $p$}
+    \State Choose variable $v$ uniformly at random from $[1, n]$ with $>1$ unique value
+    \State Draw coefficient $c \sim \mathcal{N}(0, 1)$
+    \State Update $\mathbf{z} := \mathbf{z} + c \cdot \frac{\mathbf{y} - \bar{y}}{\sigma_y}$ where $\mathbf{y} = X[:, v]$
+\EndFor
+\State Find split point $s$ minimizing $\frac{m_{\text{left}} \cdot \sigma_{z_l} + m_{\text{right}} \cdot \sigma_{z_r}}{m_{\text{left}} + m_{\text{right}}}$
+\State $X_l = \{x_i \in X \mid z_i \leq s\}$, $X_r = \{x_i \in X \mid z_i > s\}$
+\State $\text{Node}_L = \text{FairCutTree}(X_l, p, d+1)$
+\State $\text{Node}_R = \text{FairCutTree}(X_r, p, d+1)$
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Algorithm: Fair-Cut Forest}
+
+\begin{algorithm}[H]
+\caption{Fair-Cut Forest}
+\begin{algorithmic}[1]
+\Require Data $X_{m \times n}$, splitting variables $p$, trees $t$, sample size $s$
+\For{$i = 1$ to $t$}
+    \State Sample $S$ of $s$ points uniformly at random without replacement
+    \State $\text{Tree}_i = \text{FairCutTree}(X_S, p, 0)$
+\EndFor
+\State Calculate $q = \mathbb{E}[\text{depth}(m)]$
+\State \Return Forest $T$ and expected depth $q$
+\end{algorithmic}
+\end{algorithm}
+
+\subsubsection{Scoring Algorithm}
+
+\begin{algorithm}[H]
+\caption{ScorePoint}
+\begin{algorithmic}[1]
+\Require Point $\mathbf{x}_n$, forest $T$ of $t$ trees, expected depth $q$
+\State Initialize $d = 0$
+\For{$i = 1$ to $t$}
+    \State $d := d + \text{TreeScore}(\mathbf{x}, \text{Root of } T_i)$
+\EndFor
+\State \Return $2^{-d/t \cdot q^{-1}}$ \Comment{Anomaly score in $[0, 1]$}
+\end{algorithmic}
+\end{algorithm}
+
+\subsection{Recommended Hyperparameters for FCF}
+
+Based on the paper's experiments:
+\begin{itemize}
+    \item \textbf{Trees}: 200 (more than iForest's 100 due to higher variability)
+    \item \textbf{Sample size}: 32--256 points per tree (smaller for multimodal data)
+    \item \textbf{ndim}: 2 variables per split (hyperplane splits)
+    \item \textbf{ntry}: 1 (single trial per node)
+    \item \textbf{max\_depth}: None (grow until isolation)
+    \item \textbf{Coefficients}: $\sim \mathcal{N}(0,1)$
+\end{itemize}
+
+%==============================================================================
+\section{Time Complexity Analysis}
+%==============================================================================
+
+\subsection{Training Complexity}
+
+For a dataset with $m$ observations and $n$ features:
+
+\subsubsection{Single Tree Construction}
+
+\begin{itemize}
+    \item \textbf{Sample selection}: $O(s)$ where $s$ is sample size (typically 256)
+    \item \textbf{Per-node split evaluation}:
+    \begin{itemize}
+        \item Linear combination: $O(p \cdot s)$ where $p$ is \texttt{ndim}
+        \item Finding optimal split: $O(s \log s)$ for sorting + $O(s)$ for gain calculation
+        \item Total per node: $O(s \log s)$
+    \end{itemize}
+    \item \textbf{Tree depth}: Expected $O(\log s)$ for balanced trees
+    \item \textbf{Total nodes}: $O(s)$ in the worst case
+\end{itemize}
+
+\textbf{Single tree complexity}: $O(s^2 \log s)$ worst case, $O(s \log^2 s)$ expected
+
+\subsubsection{Forest Construction}
+
+For $t$ trees:
+\begin{equation}
+T_{\text{train}} = O(t \cdot s \cdot \log^2 s)
+\end{equation}
+
+With typical values ($t=200$, $s=256$):
+\begin{equation}
+T_{\text{train}} \approx O(200 \cdot 256 \cdot 64) = O(3.3 \times 10^6)
+\end{equation}
+
+\textbf{Key insight}: Training is \textbf{independent of $m$} when using subsampling, making it highly scalable.
+
+\subsection{Prediction Complexity}
+
+For predicting a single observation:
+
+\begin{itemize}
+    \item \textbf{Per tree}: $O(d \cdot p)$ where $d$ is tree depth, $p$ is \texttt{ndim}
+    \item \textbf{Expected depth}: $O(\log s)$
+    \item \textbf{Total for $t$ trees}: $O(t \cdot p \cdot \log s)$
+\end{itemize}
+
+For $k$ observations:
+\begin{equation}
+T_{\text{predict}} = O(k \cdot t \cdot p \cdot \log s)
+\end{equation}
+
+\subsection{Space Complexity}
+
+\subsubsection{Model Storage}
+
+Each node stores:
+\begin{itemize}
+    \item Split information: $O(p)$ for coefficients, means, std devs
+    \item Child pointers: $O(1)$ (indices)
+    \item Metadata: $O(1)$
+\end{itemize}
+
+Total model size:
+\begin{equation}
+S_{\text{model}} = O(t \cdot s \cdot p)
+\end{equation}
+
+\subsubsection{Comparison Table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Operation} & \textbf{Time Complexity} & \textbf{Space Complexity} \\
+\midrule
+Training (with subsampling) & $O(t \cdot s \cdot \log^2 s)$ & $O(t \cdot s \cdot p)$ \\
+Training (full data) & $O(t \cdot m \cdot \log^2 m)$ & $O(t \cdot m \cdot p)$ \\
+Prediction (single) & $O(t \cdot p \cdot \log s)$ & $O(1)$ \\
+Prediction (batch of $k$) & $O(k \cdot t \cdot p \cdot \log s)$ & $O(k)$ \\
+\bottomrule
+\end{tabular}
+\caption{Complexity summary for isotree algorithms}
+\end{table}
+
+%==============================================================================
+\section{Parallelism}
+%==============================================================================
+
+\subsection{Multi-threading with OpenMP}
+
+The \texttt{isotree} library uses \textbf{OpenMP} for parallel execution. Key parallelization strategies:
+
+\subsubsection{Tree-level Parallelism}
+
+\begin{lstlisting}[language=C++]
+#pragma omp parallel for schedule(dynamic) num_threads(nthreads)
+for (size_t tree = 0; tree < ntrees; tree++) {
+    // Build tree independently
+    build_tree(tree, sample, model);
+}
+\end{lstlisting}
+
+Each tree is built independently, allowing embarrassingly parallel construction.
+
+\subsubsection{Prediction Parallelism}
+
+\begin{lstlisting}[language=C++]
+#pragma omp parallel for schedule(static) num_threads(nthreads)
+for (size_t i = 0; i < n_observations; i++) {
+    scores[i] = score_observation(X[i], forest);
+}
+\end{lstlisting}
+
+Predictions for different observations are computed in parallel.
+
+\subsection{Thread Configuration}
+
+From the library documentation:
+\begin{itemize}
+    \item \textbf{nthreads = -1}: Use all available CPU cores
+    \item \textbf{Memory scaling}: Each thread allocates its own buffers
+    \item \textbf{Diminishing returns}: Memory bandwidth-bound operations may not scale linearly
+\end{itemize}
+
+\textbf{Warning from documentation}:
+\begin{quote}
+``Adding more threads will not result in a linear speed-up. For some types of data (e.g., large sparse matrices with small sample sizes), adding more threads might result in only a very modest speed-up (e.g., 1.5x faster with 4x more threads).''
+\end{quote}
+
+\subsection{SIMD and Architecture Optimizations}
+
+The library supports:
+\begin{itemize}
+    \item \textbf{-march=native}: Compile-time CPU optimization (AVX, AVX2, etc.)
+    \item \textbf{Cache-friendly data layouts}: Flat vector storage instead of pointer-based trees
+    \item \textbf{Contiguous memory access}: Improves cache locality during tree traversal
+\end{itemize}
+
+%==============================================================================
+\section{Data Structures}
+%==============================================================================
+
+\subsection{Core Structures (C++)}
+
+The library uses efficient, cache-friendly data structures defined in \texttt{isotree.hpp}:
+
+\subsubsection{IsoTree: Standard Node Structure}
+
+\begin{lstlisting}[language=C++]
+typedef struct IsoTree {
+    ColType  col_type;           // Numeric, Categorical, or NotUsed
+    size_t   col_num;            // Column index for split
+    double   num_split;          // Split threshold (numeric)
+    std::vector<char> cat_split; // Bitmap for categorical splits
+    int      chosen_cat;         // Selected category
+    size_t   tree_left;          // Index to left child
+    size_t   tree_right;         // Index to right child
+    double   pct_tree_left;      // Fraction going left
+    double   score;              // Depth/score at node
+    double   range_low;          // Range bounds for penalization
+    double   range_high;
+    double   remainder;          // For distance calculations
+} IsoTree;
+\end{lstlisting}
+
+\subsubsection{IsoHPlane: Extended/Hyperplane Node}
+
+For extended isolation forest with hyperplane splits:
+
+\begin{lstlisting}[language=C++]
+typedef struct IsoHPlane {
+    std::vector<size_t>   col_num;   // Multiple columns
+    std::vector<ColType>  col_type;  // Type per column
+    std::vector<double>   coef;      // Linear combination coeffs
+    std::vector<double>   mean;      // Standardization means
+    std::vector<double>   fill_val;  // Missing value handling
+    std::vector<std::vector<double>> cat_coef; // Categorical coeffs
+    
+    double   split_point;            // Threshold on combination
+    size_t   hplane_left;            // Left child index
+    size_t   hplane_right;           // Right child index
+    double   score;
+    double   range_low, range_high;
+    double   remainder;
+} IsoHPlane;
+\end{lstlisting}
+
+\subsubsection{IsoForest: Complete Model}
+
+\begin{lstlisting}[language=C++]
+typedef struct IsoForest {
+    std::vector<std::vector<IsoTree>> trees;  // Forest storage
+    NewCategAction    new_cat_action;   // Handle new categories
+    CategSplit        cat_split_type;   // Categorical strategy
+    MissingAction     missing_action;   // Missing value handling
+    ScoringMetric     scoring_metric;   // depth, density, etc.
+    double            exp_avg_depth;    // Expected isolation depth
+    double            exp_avg_sep;      // Expected separation
+    size_t            orig_sample_size; // Training sample size
+    bool              has_range_penalty;
+} IsoForest;
+\end{lstlisting}
+
+\subsubsection{ExtIsoForest: Extended Model}
+
+\begin{lstlisting}[language=C++]
+typedef struct ExtIsoForest {
+    std::vector<std::vector<IsoHPlane>> hplanes;  // Hyperplane trees
+    // Same metadata as IsoForest...
+} ExtIsoForest;
+\end{lstlisting}
+
+\subsection{Design Rationale}
+
+\subsubsection{Flat Vector Storage}
+
+Trees are stored as \textbf{flat vectors} rather than traditional pointer-based nodes:
+
+\begin{itemize}
+    \item \textbf{Cache efficiency}: Contiguous memory layout
+    \item \textbf{Serialization}: Easy to save/load models
+    \item \textbf{Thread safety}: No pointer aliasing issues
+    \item \textbf{Memory locality}: Children accessed by index, not pointer
+\end{itemize}
+
+\begin{lstlisting}[language=C++]
+// Tree traversal by index
+size_t current = 0;  // Root
+while (!is_terminal(tree[current])) {
+    if (x[tree[current].col_num] <= tree[current].num_split)
+        current = tree[current].tree_left;
+    else
+        current = tree[current].tree_right;
+}
+\end{lstlisting}
+
+\subsubsection{Categorical Handling}
+
+Categorical variables use \textbf{bitmap representation}:
+
+\begin{lstlisting}[language=C++]
+std::vector<char> cat_split;  // Bitmap: cat_split[i] = 1 if category i goes left
+\end{lstlisting}
+
+This allows $O(1)$ lookup for categorical split decisions.
+
+\subsection{Enumeration Types}
+
+\begin{lstlisting}[language=C++]
+typedef enum ColType {
+    Numeric = 31, 
+    Categorical = 32, 
+    NotUsed = 0
+} ColType;
+
+typedef enum MissingAction {
+    Divide = 21,    // Send to both branches (weighted)
+    Impute = 22,    // Fill with learned values  
+    Fail = 0        // Raise error
+} MissingAction;
+
+typedef enum CategSplit {
+    SubSet = 0,        // Subset of categories per branch
+    SingleCateg = 41   // One category vs rest
+} CategSplit;
+\end{lstlisting}
+
+\subsection{Memory Layout Summary}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lll@{}}
+\toprule
+\textbf{Structure} & \textbf{Storage} & \textbf{Purpose} \\
+\midrule
+\texttt{IsoForest} & \texttt{vector<vector<IsoTree>>} & Standard IF \\
+\texttt{ExtIsoForest} & \texttt{vector<vector<IsoHPlane>>} & Extended IF, FCF \\
+\texttt{Imputer} & \texttt{vector<vector<ImputeNode>>} & Missing value imputation \\
+\texttt{TreesIndexer} & \texttt{vector<SingleTreeIndex>} & Fast distance queries \\
+\bottomrule
+\end{tabular}
+\caption{Main data structure organization}
+\end{table}
+
+%==============================================================================
+\section{Benchmarks}
+%==============================================================================
+
+From the isotree repository benchmarks (100 trees, CovType dataset):
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lccc@{}}
+\toprule
+\textbf{Library} & \textbf{Model} & \textbf{256 samples} & \textbf{2048 samples} \\
+\midrule
+isotree & original & 0.00161s & 0.0848s \\
+isotree & extended & 0.00326s & 0.168s \\
+scikit-learn & original & 8.30s & 6.89s \\
+eif (Python) & extended & 0.16s & 5.06s \\
+H2O & original & 9.33s & 14.23s \\
+\bottomrule
+\end{tabular}
+\caption{Training time comparison (lower is better)}
+\end{table}
+
+\textbf{Key observation}: isotree is typically 1--2 orders of magnitude faster than other implementations.
+
+%==============================================================================
+\section{Conclusion}
+%==============================================================================
+
+The \texttt{isotree} library provides a highly optimized implementation of isolation forest variants:
+
+\begin{enumerate}
+    \item \textbf{Solver}: Pooled gain criterion (FCF) for better multimodal detection
+    \item \textbf{Complexity}: $O(t \cdot s \cdot \log^2 s)$ training, independent of dataset size with subsampling
+    \item \textbf{Parallelism}: OpenMP-based tree and prediction parallelism
+    \item \textbf{Data structures}: Cache-efficient flat vector storage with index-based traversal
+\end{enumerate}
+
+%==============================================================================
+\section*{References}
+%==============================================================================
+
+\begin{enumerate}
+    \item Liu, F.T., Ting, K.M., Zhou, Z.H. (2008). ``Isolation forest.'' ICDM 2008.
+    \item Hariri, S., Kind, M.C., Brunner, R.J. (2019). ``Extended Isolation Forest.'' IEEE TKDE.
+    \item Liu, F.T., Ting, K.M., Zhou, Z.H. (2010). ``On detecting clustered anomalies using SCiForest.'' ECML-PKDD.
+    \item Cortes, D. (2021). ``Revisiting randomized choices in isolation forests.'' arXiv:2110.13402.
+    \item Cortes, D. (2021). ``Isolation forests: looking beyond tree depth.'' arXiv:2111.11639.
+    \item Guha, S. et al. (2016). ``Robust random cut forest based anomaly detection on streams.'' ICML.
+\end{enumerate}
+
+\end{document}
