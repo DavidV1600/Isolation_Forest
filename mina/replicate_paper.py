@@ -2,20 +2,17 @@
 Core Experiment Script for Isolation Forest Paper Replication
 Matches methodology from: "Revisiting randomized choices in isolation forests" (Cortes, 2021)
 
-Methodology:
+Methodology (paper-style protocol):
 1. Datasets: As per Table 5 in paper.
-2. Training: Semi-supervised (Train on Normal, Test on All).
-3. Splits: Stratified 70/30.
-4. Repetitions: 5 random seeds.
-5. Metrics: ROC-AUC, PR-AUC.
-6. Scaling: Applied for distance-based methods (LOF, OCSVM).
+2. Training: Unsupervised on full dataset (no split).
+3. Evaluation: Score full dataset; ROC-AUC and PR-AUC on full labels.
+4. Repetitions: 10 random seeds by default (0..9).
+5. Scaling: Applied for distance-based methods (LOF, OCSVM).
 """
 
 import numpy as np
 import pandas as pd
-import scipy
 from sklearn.datasets import fetch_openml
-from sklearn.model_selection import train_test_split
 from sklearn.metrics import roc_auc_score, average_precision_score
 from sklearn.preprocessing import StandardScaler
 import time
@@ -25,6 +22,23 @@ import os
 
 # Filter warnings
 warnings.filterwarnings('ignore')
+
+# Defaults / config
+BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+DEFAULT_DATASETS = [
+    "arrhythmia",
+    "pima",
+    "spambase",
+    "satellite",
+    "pendigits",
+    "annthyroid",
+    "mnist",
+]
+DEFAULT_SEED_COUNT = 10
+DEFAULT_OUTPUT_DIR = "."
+
+# Model groups
+ISOTREE_MODELS = {"IF", "IF-u", "EIF-o", "EIF-t", "SCiF", "SCiF-u", "FCF"}
 
 # Import anomaly detection models
 try:
@@ -64,51 +78,44 @@ def load_dataset(dataset_name):
     Load datasets to match Table 5 in the paper.
     """
     print(f"Loading {dataset_name}...")
-    
+
     if dataset_name == "arrhythmia":
         # load .mat file from folder
-        data = load_odds_mat('../datasets/arrhythmia.mat')
-        X = data[0]
-        y = data[1]
-        y_binary = y.astype(int)
+        X, y_binary = load_odds_mat(os.path.join(BASE_DIR, "datasets", "arrhythmia.mat"))
             
     elif dataset_name == "pima":
         # Table 5: 768 rows, 8 cols, 35% outliers
-        data = fetch_openml('diabetes', version=1, parser='auto')
-        X = np.array(data.data, dtype=np.float32)
-        y = np.array(data.target)
-        y_binary = (y == 'tested_positive').astype(int)
+        mat_path = os.path.join(BASE_DIR, "datasets", "pima.mat")
+        if os.path.exists(mat_path):
+            X, y_binary = load_odds_mat(mat_path)
+        else:
+            data = fetch_openml('diabetes', version=1, parser='auto')
+            X = np.array(data.data, dtype=np.float32)
+            y = np.array(data.target)
+            y_binary = (y == 'tested_positive').astype(int)
         
     elif dataset_name == "spambase":
         # Table 5: 4601 rows, 57 cols, 39.4% outliers
-        data = fetch_openml('spambase', version=1, parser='auto')
-        X = np.array(data.data, dtype=np.float32)
-        y = np.array(data.target)
-        y_binary = (y == '1').astype(int)
+        mat_path = os.path.join(BASE_DIR, "datasets", "spambase.mat")
+        if os.path.exists(mat_path):
+            X, y_binary = load_odds_mat(mat_path)
+        else:
+            data = fetch_openml('spambase', version=1, parser='auto')
+            X = np.array(data.data, dtype=np.float32)
+            y = np.array(data.target)
+            y_binary = (y == '1').astype(int)
         
     elif dataset_name == "satellite":
-        data = load_odds_mat('../datasets/satellite.mat')
-        X = data[0]
-        y = data[1]
-        y_binary = y.astype(int)
+        X, y_binary = load_odds_mat(os.path.join(BASE_DIR, "datasets", "satellite.mat"))
             
     elif dataset_name == "mnist":
-        data = load_odds_mat('../datasets/mnist.mat')
-        X = data[0]
-        y = data[1]
-        y_binary = y.astype(int)
+        X, y_binary = load_odds_mat(os.path.join(BASE_DIR, "datasets", "mnist.mat"))
             
     elif dataset_name == "pendigits":
-        data = load_odds_mat('../datasets/pendigits.mat')
-        X = data[0]
-        y = data[1]
-        y_binary = y.astype(int)
+        X, y_binary = load_odds_mat(os.path.join(BASE_DIR, "datasets", "pendigits.mat"))
 
     elif dataset_name == "annthyroid":
-        data = load_odds_mat('../datasets/annthyroid.mat')
-        X = data[0]
-        y = data[1]
-        y_binary = y.astype(int)
+        X, y_binary = load_odds_mat(os.path.join(BASE_DIR, "datasets", "annthyroid.mat"))
 
     else:
         raise ValueError(f"Unknown dataset: {dataset_name}")
@@ -129,39 +136,46 @@ def get_model_factories():
     Return dictionary of factories. Each factory takes a 'seed' argument
     and returns an instantiated model.
     """
+    sample_size = 256
+    standard_depth = 8
     factories = {
         'IF': lambda s: IsolationForest(
-            ntrees=100, sample_size=256, ndim=1, 
+            ntrees=100, sample_size=sample_size, ndim=1, max_depth=standard_depth,
             prob_pick_pooled_gain=0.0, prob_pick_avg_gain=0.0,
             nthreads=-1, random_seed=s
         ),
-        'IF-U': lambda s: IsolationForest(
-            ntrees=100, sample_size=256, ndim=1,
-            prob_pick_pooled_gain=1.0, prob_pick_avg_gain=0.0,
+        # IF-u: same as IF but with 200 trees and unlimited depth
+        'IF-u': lambda s: IsolationForest(
+            ntrees=200, sample_size=sample_size, ndim=1, max_depth=None,
+            prob_pick_pooled_gain=0.0, prob_pick_avg_gain=0.0,
             nthreads=-1, random_seed=s
         ),
+        # Extended Isolation Forest variants (ndim=2)
         'EIF-o': lambda s: IsolationForest(
-            ntrees=100, sample_size=256, ndim=2,
+            ntrees=100, sample_size=sample_size, ndim=2, max_depth=standard_depth,
             prob_pick_pooled_gain=0.0, prob_pick_avg_gain=0.0,
             nthreads=-1, random_seed=s
         ),
         'EIF-t': lambda s: IsolationForest(
-            ntrees=100, sample_size=256, ndim=2,
+            ntrees=100, sample_size=sample_size, ndim=2, max_depth=standard_depth,
             prob_pick_pooled_gain=1.0, prob_pick_avg_gain=0.0,
             nthreads=-1, random_seed=s
         ),
+        # SCiForest: averaged gain, 10 trials
         'SCiF': lambda s: IsolationForest(
-            ntrees=100, sample_size=256, ndim=2, ntry=10,
+            ntrees=100, sample_size=sample_size, ndim=2, ntry=10, max_depth=standard_depth,
             prob_pick_avg_gain=1.0, prob_pick_pooled_gain=0.0,
             nthreads=-1, random_seed=s
         ),
+        # SCiF-u: 200 trees, unlimited depth (paper variant)
         'SCiF-u': lambda s: IsolationForest(
-            ntrees=100, sample_size=256, ndim=2, ntry=10,
-            prob_pick_avg_gain=1.0, prob_pick_pooled_gain=1.0,
+            ntrees=200, sample_size=sample_size, ndim=2, ntry=10, max_depth=None,
+            prob_pick_avg_gain=1.0, prob_pick_pooled_gain=0.0,
             nthreads=-1, random_seed=s
         ),
+        # Fair-Cut Forest (pooled gain, ntry=1, 200 trees, unlimited depth)
         'FCF': lambda s: IsolationForest(
-            ntrees=200, sample_size=256, ndim=2, ntry=1,
+            ntrees=200, sample_size=sample_size, ndim=2, ntry=1, max_depth=None,
             prob_pick_pooled_gain=1.0, prob_pick_avg_gain=0.0,
             nthreads=-1, random_seed=s
         ),
@@ -173,13 +187,35 @@ def get_model_factories():
     }
     return factories
 
-def test_model(model_name, model_factory, X, y):
+def needs_scaling(model_name):
+    return model_name.startswith('LOF') or model_name.startswith('OCSVM')
+
+def score_model(model_name, model, X):
     """
-    Test a single model using stratified train/test split.
-    Protocol: Semi-supervised (Train on Normal, Test on All/Test-Set).
-    Seeds: 5 repetitions.
+    Return anomaly scores with higher = more anomalous.
     """
-    seeds = [42, 1, 2, 3, 4]
+    if model_name in ISOTREE_MODELS:
+        try:
+            scores = model.predict(X, output="score")
+        except (TypeError, ValueError):
+            try:
+                scores = model.decision_function(X)
+            except (AttributeError, TypeError):
+                scores = model.predict(X)
+        scores = np.asarray(scores).reshape(-1)
+        return scores
+    if model_name.startswith('LOF'):
+        return -model.decision_function(X)
+    if model_name.startswith('OCSVM'):
+        return -model.decision_function(X)
+    scores = model.predict(X)
+    return np.asarray(scores).reshape(-1)
+
+def test_model(model_name, model_factory, X, y, seeds):
+    """
+    Test a single model using the paper-style protocol:
+    fit and score on full X for each seed.
+    """
     roc_scores = []
     pr_scores = []
     times = []
@@ -188,67 +224,29 @@ def test_model(model_name, model_factory, X, y):
     
     for seed in seeds:
         try:
-            # 1. Stratified split (70% train, 30% test)
-            X_train, X_test, y_train, y_test = train_test_split(
-                X, y, test_size=0.3, random_state=seed, stratify=y
-            )
-            
-            # 2. Semi-supervised: Training data contains ONLY normal points
-            X_train_normal = X_train[y_train == 0]
-            
-            # 3. Feature Scaling (Important for LOF/OCSVM)
-            if model_name.startswith('LOF') or model_name.startswith('OCSVM'):
+            # 1. Feature Scaling (Important for LOF/OCSVM)
+            if needs_scaling(model_name):
                 scaler = StandardScaler()
-                X_train_final = scaler.fit_transform(X_train_normal)
-                X_test_final = scaler.transform(X_test)
+                X_eval = scaler.fit_transform(X)
             else:
-                X_train_final = X_train_normal
-                X_test_final = X_test
-            
-            # 4. Instantiate and Fit
+                X_eval = X
+
+            # 2. Instantiate and Fit on full data
             start_time = time.time()
             model = model_factory(seed)
-            model.fit(X_train_final)
+            model.fit(X_eval)
             
-            # 5. Predict scores
-            # Expect Higher Score = More Anomalous
-            if 'IF' in model_name or 'EIF' in model_name or 'SCiF' in model_name or 'FCF' in model_name:
-                # isotree scoring must be explicit
-                try:
-                    scores = model.predict(X_test_final, output="score")
-                except (TypeError, ValueError):
-                    try:
-                        scores = model.decision_function(X_test_final)
-                    except (AttributeError, TypeError):
-                        scores = model.predict(X_test_final)
-                
-                # Sanity check: ensure scores are not just binary
-                if hasattr(scores, 'ndim') and scores.ndim != 1:
-                    scores = scores.flatten()
-                
-                if np.unique(scores).size <= 10:
-                    print(f"Warning: {model_name} returned few unique scores ({np.unique(scores).size}).")
-                    
-            elif 'LOF' in model_name:
-                # decision_function = shifted opposite of anomaly score. 
-                # Larger = Inlier. Smaller = Outlier.
-                # We want Larger = Outlier. So negate it.
-                scores = -model.decision_function(X_test_final)
-                
-            elif 'OCSVM' in model_name:
-                # decision_function: Positive = Inlier, Negative = Outlier.
-                # We want Larger = Outlier. So negate it.
-                scores = -model.decision_function(X_test_final)
-                
-            else:
-                scores = model.predict(X_test_final)
+            # 3. Predict scores (Higher = More Anomalous)
+            scores = score_model(model_name, model, X_eval)
+            if np.unique(scores).size <= 10:
+                print(f"Warning: {model_name} returned few unique scores ({np.unique(scores).size}).", end=' ')
                 
             elapsed = time.time() - start_time
             times.append(elapsed)
             
-            # 6. Score
-            roc = roc_auc_score(y_test, scores)
-            pr = average_precision_score(y_test, scores)
+            # 4. Score on full dataset
+            roc = roc_auc_score(y, scores)
+            pr = average_precision_score(y, scores)
             
             roc_scores.append(roc)
             pr_scores.append(pr)
@@ -279,7 +277,28 @@ def test_model(model_name, model_factory, X, y):
         'train_time': mean_time
     }
 
-def compare_models_on_dataset(dataset_name, model_subset=None):
+def run_sanity_check(dataset_name, model_name, model_factory, X, y, seed):
+    print("\n" + "-" * 80)
+    print(f"SANITY CHECK: {dataset_name} | {model_name} | seed={seed}")
+    print("-" * 80)
+    if needs_scaling(model_name):
+        scaler = StandardScaler()
+        X_eval = scaler.fit_transform(X)
+    else:
+        X_eval = X
+    model = model_factory(seed)
+    model.fit(X_eval)
+    scores = score_model(model_name, model, X_eval)
+    roc = roc_auc_score(y, scores)
+    pr = average_precision_score(y, scores)
+    roc_inv = roc_auc_score(y, -scores)
+    pr_inv = average_precision_score(y, -scores)
+    roc_pref = "scores" if roc >= roc_inv else "-scores"
+    pr_pref = "scores" if pr >= pr_inv else "-scores"
+    print(f"ROC-AUC: scores={roc:.4f} vs -scores={roc_inv:.4f} -> {roc_pref}")
+    print(f"PR-AUC:  scores={pr:.4f} vs -scores={pr_inv:.4f} -> {pr_pref}")
+
+def compare_models_on_dataset(dataset_name, seeds, model_subset=None):
     """Run all models on a dataset"""
     print(f"\n" + "="*80)
     print(f"DATASET: {dataset_name.upper()}")
@@ -295,7 +314,7 @@ def compare_models_on_dataset(dataset_name, model_subset=None):
     
     results = []
     for name, factory in factories.items():
-        res = test_model(name, factory, X, y)
+        res = test_model(name, factory, X, y, seeds)
         if res:
             res['dataset'] = dataset_name
             results.append(res)
@@ -303,51 +322,45 @@ def compare_models_on_dataset(dataset_name, model_subset=None):
     return results
 
 if __name__ == "__main__":
-    # If run directly, run experiments
-    datasets = [
-        "arrhythmia",
-        "pima",
-        "spambase",
-        "satellite",
-        "pendigits",
-        "annthyroid",
-        "mnist",
-    ]
-    
+    datasets = DEFAULT_DATASETS
+    seeds = DEFAULT_SEED_COUNT
+    output_dir = DEFAULT_OUTPUT_DIR
+    os.makedirs(output_dir, exist_ok=True)
+
     test_models = [
-        'IF', 'IF-U', 'EIF-o', 'EIF-t', 
-        'SCiF', 'SCiF-u', 'FCF', 
+        'IF', 'IF-u', 'EIF-o', 'EIF-t',
+        'SCiF', 'SCiF-u', 'FCF',
         'LOF', 'OCSVM-rbf', 'OCSVM-linear'
     ]
-    
+
+    factories = get_model_factories()
+
     # Setup CSV
-    if os.path.exists('anomaly_detection_results.csv'):
-        os.remove('anomaly_detection_results.csv')
-    
-    pd.DataFrame(columns=['dataset', 'model', 
-                            'roc_auc_mean', 'roc_auc_std', 
-                            'pr_auc_mean', 'pr_auc_std', 
-                            'train_time']).to_csv('anomaly_detection_results.csv', index=False)
-    
+    output_csv = os.path.join(output_dir, "anomaly_detection_results.csv")
+    if os.path.exists(output_csv):
+        os.remove(output_csv)
+
+    pd.DataFrame(columns=['dataset', 'model',
+                            'roc_auc_mean', 'roc_auc_std',
+                            'pr_auc_mean', 'pr_auc_std',
+                            'train_time']).to_csv(output_csv, index=False)
+
     for dataset in datasets:
         try:
             current_models = test_models.copy()
-            if dataset == 'covertype':
-                # Skip slow models
-                for m in ['OCSVM-rbf', 'OCSVM-linear', 'LOF']:
-                    if m in current_models:
-                        current_models.remove(m)
-            
-            dataset_results = compare_models_on_dataset(dataset, model_subset=current_models)
-            
+            dataset_results = compare_models_on_dataset(dataset, seeds, model_subset=current_models)
+
             if dataset_results:
                 df = pd.DataFrame(dataset_results)
                 # Enforce column order to match CSV header
                 df = df[['dataset', 'model', 'roc_auc_mean', 'roc_auc_std', 'pr_auc_mean', 'pr_auc_std', 'train_time']]
-                df.to_csv('anomaly_detection_results.csv', mode='a', header=False, index=False)
+                df.to_csv(output_csv, mode='a', header=False, index=False)
                 print(f"Saved results for {dataset}")
-                
+
         except Exception as e:
             print(f"\nERROR with dataset {dataset}: {e}")
             import traceback
             traceback.print_exc()
+
+
+
