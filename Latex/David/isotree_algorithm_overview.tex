@@ -1,40 +1,7 @@
-\documentclass[11pt,a4paper]{article}
-
-% Packages
-\usepackage[utf8]{inputenc}
-\usepackage[T1]{fontenc}
-\usepackage{amsmath,amssymb,amsthm}
-\usepackage{algorithm}
-\usepackage{algpseudocode}
-\usepackage{booktabs}
-\usepackage{hyperref}
-\usepackage{graphicx}
-\usepackage{geometry}
-\usepackage{enumitem}
-\usepackage{xcolor}
-\usepackage{listings}
-
-\geometry{margin=1in}
-
-% Code listing style
-\lstset{
-    basicstyle=\ttfamily\small,
-    keywordstyle=\color{blue},
-    commentstyle=\color{gray},
-    stringstyle=\color{red},
-    breaklines=true,
-    frame=single
-}
-
-\begin{document}
-
-\maketitle
-
+\section{Implementation}
 %==============================================================================
-\section{Introduction}
+\subsection{Models defined}
 %==============================================================================
-
-The \texttt{isotree} library is a high-performance C++ implementation of Isolation Forest and its variants, including:
 \begin{itemize}
     \item \textbf{iForest}: Original Isolation Forest (Liu et al., 2008)
     \item \textbf{EIF}: Extended Isolation Forest (Hariri et al., 2019)
@@ -43,11 +10,7 @@ The \texttt{isotree} library is a high-performance C++ implementation of Isolati
     \item \textbf{RRCF}: Robust Random Cut Forest (Guha et al., 2016)
 \end{itemize}
 
-The library provides Python, R, and C interfaces, with the core algorithms implemented in C++ for maximum performance.
-
-\subsection{Multi-threading with OpenMP}
-
-The \texttt{isotree} library uses \textbf{OpenMP} for parallel execution. Key parallelization strategies:
+\subsection{Multi-threading}
 
 \subsubsection{Tree-level Parallelism}
 
@@ -72,7 +35,7 @@ for (size_t i = 0; i < n_observations; i++) {
 
 Predictions for different observations are computed in parallel.
 
-\subsection{SIMD and Architecture Optimizations}
+\subsection{Optimizations}
 
 The library supports:
 \begin{itemize}
@@ -82,12 +45,8 @@ The library supports:
 \end{itemize}
 
 %==============================================================================
-\section{Data Structures}
+\subsection{Data Structures}
 %==============================================================================
-
-\subsection{Core Structures (C++)}
-
-The library uses efficient, cache-friendly data structures defined in \texttt{isotree.hpp}:
 
 \subsubsection{IsoTree: Standard Node Structure}
 
@@ -180,27 +139,29 @@ while (!is_terminal(tree[current])) {
 \end{lstlisting}
 
 %==============================================================================
-\section{Benchmarks}
+\subsection{Benchmarks}
 %==============================================================================
 
 From the isotree repository benchmarks (100 trees, CovType dataset):
 
 \begin{table}[H]
 \centering
-\begin{tabular}{@{}lccc@{}}
+\begin{tabular}{@{}lcccc@{}}
 \toprule
-\textbf{Library} & \textbf{Model} & \textbf{256 samples} & \textbf{2048 samples} \\
+\textbf{Library} & \textbf{Model} & \textbf{256 samples} & \textbf{1024 samples} & \textbf{10k samples} \\
 \midrule
-isotree & original & 0.00161s & 0.0848s \\
-isotree & extended & 0.00326s & 0.168s \\
-scikit-learn & original & 8.30s & 6.89s \\
-eif (Python) & extended & 0.16s & 5.06s \\
-H2O & original & 9.33s & 14.23s \\
+isotree & orig & 0.00161s & 0.00631s & 0.0848s \\
+isotree & ext & 0.00326s & 0.0123s & 0.168s \\
+eif & orig & 0.149s & 0.398s & 4.99s \\
+eif & ext & 0.16s & 0.428s & 5.06s \\
+H2O & orig & 9.33s & 11.21s & 14.23s \\
+H2O & ext & 1.06s & 2.07s & 17.31s \\
+scikit-learn & orig & 8.30s & 8.01s & 6.89s \\
+solitude & orig & 32.61s & 34.01s & 41.01s \\
 \bottomrule
 \end{tabular}
-\caption{Training time comparison (lower is better)}
+\caption{Training time comparison on CovType dataset, 100 trees (lower is better)}
 \end{table}
 
-\textbf{Key observation}: isotree is typically 1--2 orders of magnitude faster than other implementations.
 
-\end{document}
+\textbf{Key observation}: isotree is typically 1--2 orders of magnitude faster than other implementations.
