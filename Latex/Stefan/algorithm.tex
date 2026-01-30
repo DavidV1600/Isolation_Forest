@@ -1,2 +1,179 @@
-\section{Algoritm}
-AAA
+\section{Algorithm}
+
+\subsection{Node Splitting Mechanisms}
+This subsection details the specific decision process occurring inside a single node for each algorithm. The core difference lies in how the split parameters (dimension/normal vector and split point) are chosen.
+
+\subsubsection*{Isolation Forest (IF)}
+It uses axis-parallel splits with fully random selection.
+
+\textbf{Node steps:}
+\begin{itemize}
+    \item Randomly select a feature $j$ from the set of available dimensions $d$.
+    \item Randomly select a split value $v$ from a uniform distribution between the minimum and the maximum values of feature $j$ in the current node ($S$): 
+    $$v \sim U(\min(S_j), \max(S_j))$$
+    \item \textbf{Branching Condition:} A data point $\mathbf{x}$ is assigned to the left child node if $x_j < v$. Otherwise, it is assigned to the right child.
+\end{itemize}
+
+\subsubsection*{Extended Isolation Forest (EIF)}
+It uses random hyperplanes to handle anomalies that are not axis-aligned (oblique splits).
+
+\textbf{Node steps:}
+\begin{itemize}
+    \item Generate a random normal vector $\mathbf{n}$ from a standard normal distribution $\mathcal{N}(0,1)$ for each dimension.
+    \item Project the data points onto this normal vector.
+    \item Select a random split point $p$ uniformly within the range of the projected values.
+    \item \textbf{Branching Condition:} A point $\mathbf{x}$ goes to the left child if: 
+    $$(\mathbf{x} - p) \cdot \mathbf{n} \le 0$$
+\end{itemize}
+
+\subsubsection*{SCiForest (SCiF)}
+It uses guided hyperplanes. It aims to address the issue where random hyperplanes might pass through sparse regions without actually separating clusters. Unlike EIF, the choice of the normal vector is optimized rather than purely random.
+
+\textbf{Node steps:}
+\begin{itemize}
+    \item Generate multiple candidate hyperplanes (as in EIF).
+    \item Evaluate these candidates using a quality criterion (typically standard deviation reduction or density separation).
+    \item Select the specific hyperplane $(\mathbf{n}_i, p_i)$ that maximizes this criterion.
+\end{itemize}
+
+\subsection*{Fair-Cut Forest (FCF) -- The Proposed Model}
+FCF uses Constructed Projections and Optimal Splits. Unlike standard Isolation Forest which picks split points randomly, FCF constructs a projection vector $\mathbf{z}$ by combining multiple features and then searches for the specific threshold $s$ that best separates the data (minimizing impurity).
+
+\textbf{Node steps:}
+\begin{itemize}
+    \item Create a projection vector $\mathbf{z}$ of size $m$ (number of data points) initialized to zeros.
+    \item Repeat $p$ times (where $p$ is a hyperparameter for the number of splitting variables):
+    \begin{itemize}
+        \item Choose a variable index $v$ uniformly at random from the available columns $[1, n]$.
+        \item Extract the column vector $\mathbf{y} = \mathbf{X}[:, v]$.
+        \item Draw a random coefficient $c$ from a Normal distribution $\mathcal{N}(0,1)$.
+        \item Update $\mathbf{z}$ by adding the standardized version of feature $\mathbf{y}$: 
+        $$\mathbf{z} := \mathbf{z} + c \frac{\mathbf{y} - \bar{y}}{\sigma_{y}}$$ 
+        This step builds a random linear combination of vectors.
+    \end{itemize}
+    \item Instead of picking a random cut, iterate through possible values of $s$ in $\mathbf{z}$ to find the one that minimizes the cluster impurity. That is, choose $s$ to minimize: 
+    $$\frac{m_{\text{left}} \sigma_{\mathbf{z}_l} + m_{\text{right}} \sigma_{\mathbf{z}_r}}{m_{\text{left}} + m_{\text{right}}}$$
+    \item Divide the data $\mathbf{X}$ into left set $\mathbf{X}_l$ (where $z_i \le s$) and right set $\mathbf{X}_r$ (where $z_i > s$).
+\end{itemize}
+
+The Gain criterion (to be maximized) is defined as: 
+$$G = \sigma(\mathbf{z}) - \left( \frac{m_L}{m} \sigma(\mathbf{z}_L) + \frac{m_R}{m} \sigma(\mathbf{z}_R) \right)$$
+
+Where:
+\begin{enumerate}
+    \item $m$: Number of data points (rows) in the current node.
+    \item $n$: Number of variables (columns) in the dataset.
+    \item $\mathbf{z}$: The constructed projection vector (size $m$).
+    \item $\mathbf{z}_l, \mathbf{z}_r$: The subsets of $\mathbf{z}$ values falling into the left and right children.
+    \item $m_L, m_R$: The number of points in the left and right children.
+    \item $\sigma_{\mathbf{z}}$: The standard deviation of the values in vector $\mathbf{z}$.
+\end{enumerate}
+
+\subsection{Forest Construction Algorithm}
+The construction of the Fair-Cut Forest (FCF) follows an ensemble approach similar to the standard Isolation Forest but incorporates the specific optimized splitting mechanism defined in the node training phase.
+
+The algorithm takes as input the dataset $\mathbf{X}$ of size $m \times n$, the number of trees $t$, the sub-sampling size $s$, and the number of splitting variables $p$.
+
+\begin{enumerate}
+    \item \textbf{Sub-sampling:} The algorithm iterates $t$ times to build the forest. In each iteration, a subset $\mathbf{X}_s$ is created by selecting $s$ data points uniformly at random without replacement from the original dataset $\mathbf{X}$. This sub-sampling (typically $s=256$) is critical for maintaining diversity among the trees and preventing overfitting.
+    
+    \item \textbf{Tree Growth:} For each subset $\mathbf{X}_s$, a tree is grown using the \texttt{FairCutTree} process (described in the previous section). 
+    \begin{itemize}
+        \item The root node is initialized with the subset $\mathbf{X}_s$ and current depth $d=0$.
+        \item The tree recursively partitions the data using the optimized gain criterion until the constraints (max depth or single data point) are met.
+    \end{itemize}
+    
+    \item \textbf{Normalization Factor ($c(s)$):} Once the forest is built, the algorithm calculates the expected path length of an unsuccessful search in a Binary Search Tree (BST) for a dataset of size $s$. This value, denoted as $c(s)$, serves as the baseline for normalization:
+    $$ c(s) = 2H(s-1) - \frac{2(s-1)}{s} $$
+    where $H(i)$ is the harmonic number, estimated as $\ln(i) + 0.5772$.
+    
+    \item \textbf{Output:} The result is a set $\mathbb{T}$ containing $t$ trained Fair-Cut Trees and the normalization factor $c(s)$.
+\end{enumerate}
+
+\subsection{Scoring and Anomaly Detection}
+\label{scoring}
+The scoring phase determines the degree of anomaly for a new query point $\mathbf{x}$. This process involves traversing the trees using the parameters learned during training and aggregating the path lengths.
+
+\subsubsection*{1. Tree Traversal and Projection Reconstruction}
+To calculate the path length $h(\mathbf{x})$ in a single tree, the point $\mathbf{x}$ must traverse from the root to a leaf. Because FCF uses composite projections, the splitting value $z$ must be mathematically reconstructed at each node using the stored training parameters.
+
+\begin{itemize}
+    \item \textbf{Initialization:} Upon entering a node, the projection value $z$ is initialized to 0.
+    \item \textbf{Reconstruction Loop:} The algorithm iterates through the specific set of variables $v \in \{1, \dots, p\}$ that were selected during the training of that node. For each variable, the projection is updated:
+    $$ z := z + c_v \frac{x_v - \bar{y}_v}{\sigma_{y_v}} $$
+    Here, $x_v$ is the value of the feature in the query point, while $c_v$ (random coefficient), $\bar{y}_v$ (mean), and $\sigma_{y_v}$ (standard deviation) are the specific values stored in the node during training. This ensures the point is projected onto the exact same hyperplane used to define the split.
+    \item \textbf{Branching Decision:} The reconstructed $z$ is compared to the optimal split threshold $s$ stored in the node:
+    \begin{itemize}
+        \item If $z \leq s$, the traversal continues to the Left child.
+        \item If $z > s$, the traversal continues to the Right child.
+    \end{itemize}
+    \item \textbf{Termination:} This recursive process continues until a leaf node is reached. The returned value is the depth of the leaf (the number of edges from the root).
+\end{itemize}
+
+\subsubsection*{2. Final Anomaly Score}
+The final anomaly score $S(\mathbf{x}, s)$ is derived by averaging the path lengths across the entire forest $\mathbb{T}$.
+
+\begin{enumerate}
+    \item \textbf{Average Path Length:} The query point $\mathbf{x}$ is passed through all $t$ trees. The average path length $E(h(\mathbf{x}))$ is calculated as:
+    $$ E(h(\mathbf{x})) = \frac{1}{t} \sum_{i=1}^{t} h_i(\mathbf{x}) $$
+    \item \textbf{Score Normalization:} The average path length is normalized by the expected path length $c(s)$ to produce a score between 0 and 1:
+    $$ S(\mathbf{x}, s) = 2^{-\frac{E(h(\mathbf{x}))}{c(s)}} $$
+    \item \textbf{Interpretation:}
+    \begin{itemize}
+        \item \textbf{$S \to 1$:} The point has a short average path length, indicating it was easily isolated. It is likely an \textbf{anomaly}.
+        \item \textbf{$S \to 0.5$:} The point has an average path length, indicating it is likely a normal observation.
+        \item \textbf{$S \to 0$:} The point is deep inside the cluster, indicating it is very normal.
+    \end{itemize}
+\end{enumerate}
+
+\subsection{Complexity Analysis}
+This section analyzes the computational complexity of the Fair-Cut Forest (FCF) and contrasts it with the standard Isolation Forest (IF) and Extended Isolation Forest (EIF). The primary trade-off proposed by the FCF model is accepting higher computational costs per node in exchange for optimized splits that better isolate clustered anomalies.
+
+\subsubsection{Training Time Complexity}
+The training complexity is determined by the cost of constructing the trees. For a forest of $t$ trees and a sub-sample size of $s$:
+
+\begin{itemize}
+    \item \textbf{Isolation Forest (IF):} The standard IF selects a feature and a split value uniformly at random. This requires $\mathcal{O}(1)$ operations per node (constant time). The total complexity for building the forest is:
+    $$ \mathcal{O}(t \cdot s \log s) $$
+    
+    \item \textbf{Fair-Cut Forest (FCF):} In FCF, the splitting process is significantly more involved. At each node containing $m$ data points:
+    \begin{enumerate}
+        \item \textbf{Projection Construction:} The algorithm iterates $p$ times (the number of splitting variables). In each iteration, it performs vector operations on $m$ points to update $\mathbf{z}$. This costs $\mathcal{O}(m \cdot p)$.
+        \item \textbf{Split Optimization:} To find the optimal split $s$, the projection vector $\mathbf{z}$ is typically sorted, costing $\mathcal{O}(m \log m)$.
+    \end{enumerate}
+    Consequently, the total training complexity for FCF is:
+    $$ \mathcal{O}(t \cdot s \cdot (p + \log s) \cdot \log s) $$
+    Since $p$ is a hyperparameter often set $>1$, FCF is computationally more expensive than IF. However, the paper argues that this cost is justified as it leads to more efficient isolation (shallower trees for anomalies).
+\end{itemize}
+
+\subsubsection{Scoring Time Complexity}
+The scoring complexity refers to the time required to evaluate a new query point $\mathbf{x}$.
+
+\begin{itemize}
+    \item \textbf{Isolation Forest (IF):} A point simply traverses the tree by making single-feature comparisons. The cost is proportional to the tree height ($\log s$).
+    $$ \mathcal{O}(t \cdot \log s) $$
+    
+    \item \textbf{Fair-Cut Forest (FCF):} As described in Section \ref{scoring}, traversing a node requires reconstructing the projection $z$.
+    \begin{itemize}
+        \item At each node in the path, the algorithm must perform $p$ updates (one for each splitting variable stored during training).
+        \item Therefore, the cost per node is $\mathcal{O}(p)$.
+    \end{itemize}
+    The total scoring complexity is:
+    $$ \mathcal{O}(t \cdot p \cdot \log s) $$
+    This makes prediction slower than IF by a factor of $p$, but comparable to Extended Isolation Forest (EIF) if $p$ is close to the data dimensionality $n$.
+\end{itemize}
+
+\subsubsection{Space Complexity}
+The memory requirement is defined by the parameters stored in the trained model.
+
+\begin{itemize}
+    \item \textbf{Isolation Forest (IF):} Stores only the split dimension index and split value per node. Space is minimal: $\mathcal{O}(t \cdot s)$.
+    \item \textbf{Fair-Cut Forest (FCF):} For each internal node, FCF must store the parameters required to reconstruct the projection. This includes:
+    \begin{itemize}
+        \item The indices of the $p$ variables used.
+        \item The $p$ random coefficients ($c_v$).
+        \item The $p$ means ($\bar{y}_v$) and standard deviations ($\sigma_{y_v}$).
+    \end{itemize}
+    Thus, the space complexity scales linearly with $p$:
+    $$ \mathcal{O}(t \cdot s \cdot p) $$
+\end{itemize}
