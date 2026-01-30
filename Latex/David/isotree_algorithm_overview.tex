@@ -15,7 +15,6 @@
 \subsubsection{Tree-level Parallelism}
 
 \begin{lstlisting}[language=C++]
-#pragma omp parallel for schedule(dynamic) num_threads(nthreads)
 for (size_t tree = 0; tree < ntrees; tree++) {
     // Build tree independently
     build_tree(tree, sample, model);
@@ -27,7 +26,6 @@ Each tree is built independently, allowing embarrassingly parallel construction.
 \subsubsection{Prediction Parallelism}
 
 \begin{lstlisting}[language=C++]
-#pragma omp parallel for schedule(static) num_threads(nthreads)
 for (size_t i = 0; i < n_observations; i++) {
     scores[i] = score_observation(X[i], forest);
 }
@@ -163,5 +161,36 @@ solitude & orig & 32.61s & 34.01s & 41.01s \\
 \caption{Training time comparison on CovType dataset, 100 trees (lower is better)}
 \end{table}
 
-
 \textbf{Key observation}: isotree is typically 1--2 orders of magnitude faster than other implementations.
+
+\subsection{Model Quality (AUROC)}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Library} & \textbf{AUROC (defaults)} & \textbf{AUROC (grid search)} \\
+\midrule
+isotree & 0.70 & \textbf{0.84} \\
+eif & -- & 0.714 \\
+scikit-learn & 0.687 & 0.74 \\
+H2O & 0.662 & 0.748 \\
+\bottomrule
+\end{tabular}
+\caption{Outlier detection quality on Satellite dataset (higher is better)}
+\end{table}
+
+\begin{table}[H]
+\centering
+\begin{tabular}{@{}lcc@{}}
+\toprule
+\textbf{Library} & \textbf{AUROC (defaults)} & \textbf{AUROC (grid search)} \\
+\midrule
+isotree & 0.80 & \textbf{0.982} \\
+eif & -- & 0.808 \\
+scikit-learn & 0.836 & 0.836 \\
+H2O & 0.80 & 0.80 \\
+\bottomrule
+\end{tabular}
+\caption{Outlier detection quality on Annthyroid dataset (higher is better)}
+\end{table}
