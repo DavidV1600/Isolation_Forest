@@ -1,0 +1,7 @@
+\begin{abstract}
+
+Isolation Forest is a popular unsupervised method for detecting anomalies by recursively partitioning data until individual points become isolated. While the standard algorithm relies on purely random splits, several extensions---including Extended Isolation Forest (EIF), Split-Criterion Isolation Forest (SCiForest), and Fair-Cut Forest (FCF)---introduce guided splitting strategies that can improve detection of certain anomaly types.
+
+We present a systematic evaluation of these variants, focusing on how hyperparameter choices affect detection performance. Through experiments on multiple benchmark datasets, we find that no algorithm consistently outperforms the others; results vary substantially depending on the dataset characteristics. Key factors such as tree count, depth limits, subsample size, split dimensionality, and scoring method all interact in complex, dataset-specific ways. Our analysis demonstrates that practitioners should treat these algorithmic choices as tunable parameters rather than accepting library defaults.
+
+\end{abstract}
