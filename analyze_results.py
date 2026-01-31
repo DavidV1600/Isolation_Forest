@@ -1,9 +1,3 @@
-"""
-Visualization and Analysis Script for Isolation Forest Experiments
-
-Creates plots and detailed analysis of the experimental results.
-"""
-
 import pandas as pd
 import numpy as np
 import matplotlib.pyplot as plt
@@ -11,26 +5,21 @@ import seaborn as sns
 import os
 
 def load_results():
-    """Load results from CSV"""
-    if not os.path.exists('anomaly_detection_results.csv'):
+    if not os.path.exists('./outputs/anomaly_detection_results.csv'):
         print("No results file found.")
         return None
     
-    df = pd.read_csv('anomaly_detection_results.csv')
+    df = pd.read_csv('./outputs/anomaly_detection_results.csv')
     
-    # Clean data: drop rows where dataset is NaN or not a string
+    # rows where dataset is NaN or not a string
     df = df.dropna(subset=['dataset'])
     df = df[df['dataset'].apply(lambda x: isinstance(x, str))]
     
-    # Ensure numeric columns are numeric
-    # Use mean columns for plotting
     numeric_cols = ['roc_auc_mean', 'roc_auc_std', 'pr_auc_mean', 'pr_auc_std', 'train_time']
     for col in numeric_cols:
         if col in df.columns:
             df[col] = pd.to_numeric(df[col], errors='coerce')
     
-    # Map mean columns to plot-friendly names if needed, or just use them directly
-    # For compatibility with existing plot functions, we can alias them
     if 'roc_auc_mean' in df.columns:
         df['roc_auc'] = df['roc_auc_mean']
     if 'pr_auc_mean' in df.columns:
@@ -44,8 +33,6 @@ def load_results():
 
 
 def plot_model_comparison(df, metric='roc_auc'):
-    """Create bar plot comparing models across datasets"""
-    
     pivot = df.pivot_table(values=metric, index='model', columns='dataset', aggfunc='first')
     
     fig, ax = plt.subplots(figsize=(14, 8))
@@ -60,13 +47,11 @@ def plot_model_comparison(df, metric='roc_auc'):
     
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
-    plt.savefig(f'comparison_{metric}.png', dpi=300, bbox_inches='tight')
-    print(f"✓ Saved comparison_{metric}.png")
+    plt.savefig(f'./outputs/comparison_{metric}.png', dpi=300, bbox_inches='tight')
+    print(f" Saved comparison_{metric}.png")
     plt.close()
 
 def plot_time_vs_performance(df):
-    """Plot training time vs performance trade-off"""
-    
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
     
     datasets = df['dataset'].unique()
@@ -85,7 +70,7 @@ def plot_time_vs_performance(df):
                        s=150, alpha=0.7, color=colors[idx],
                        label=dataset.capitalize(), edgecolors='black', linewidth=1)
         
-        # Annotate model names
+        # model names
         for _, row in subset.iterrows():
             axes[0].annotate(row['model'], 
                            (row['train_time'], row['roc_auc']),
@@ -111,13 +96,11 @@ def plot_time_vs_performance(df):
     axes[1].set_xscale('symlog', linthresh=1e-4)
     
     plt.tight_layout()
-    plt.savefig('time_vs_performance.png', dpi=300, bbox_inches='tight')
-    print("✓ Saved time_vs_performance.png")
+    plt.savefig('./outputs/time_vs_performance.png', dpi=300, bbox_inches='tight')
+    print(" Saved time_vs_performance.png")
     plt.close()
 
 def plot_heatmap(df, metric='roc_auc'):
-    """Create heatmap of model performance across datasets"""
-    
     pivot = df.pivot_table(values=metric, index='model', columns='dataset', aggfunc='first')
     
     fig, ax = plt.subplots(figsize=(12, 8))
@@ -130,13 +113,11 @@ def plot_heatmap(df, metric='roc_auc'):
     ax.set_ylabel('Model', fontsize=12)
     
     plt.tight_layout()
-    plt.savefig(f'heatmap_{metric}.png', dpi=300, bbox_inches='tight')
-    print(f"✓ Saved heatmap_{metric}.png")
+    plt.savefig(f'./outputs/heatmap_{metric}.png', dpi=300, bbox_inches='tight')
+    print(f" Saved heatmap_{metric}.png")
     plt.close()
 
 def generate_ranking_table(df):
-    """Generate ranking of models for each dataset"""
-    
     print("\n" + "="*100)
     print("MODEL RANKINGS BY DATASET (ROC-AUC)")
     print("="*100)
@@ -158,33 +139,27 @@ def generate_ranking_table(df):
     print("\n" + "="*100)
 
 def generate_summary_statistics(df):
-    """Generate summary statistics across all experiments"""
-    
     print("\n" + "="*100)
     print("SUMMARY STATISTICS")
     print("="*100)
     
-    # Overall best models
-    print("\n🏆 OVERALL BEST MODELS (Average ROC-AUC):")
+    print("\n OVERALL BEST MODELS (Average ROC-AUC):")
     avg_roc = df.groupby('model')['roc_auc'].mean().sort_values(ascending=False)
     for model, score in avg_roc.head(5).items():
         print(f"  {model:<15}: {score:.4f}")
     
-    # Fastest models
-    print("\n⚡ FASTEST MODELS (Average Training Time):")
+    print("\nFASTEST MODELS (Average Training Time):")
     avg_time = df.groupby('model')['train_time'].mean().sort_values()
     for model, time_val in avg_time.head(5).items():
         print(f"  {model:<15}: {time_val:.5f}s")
     
-    # Best efficiency (ROC-AUC per second)
-    print("\n📊 BEST EFFICIENCY (ROC-AUC / Training Time):")
+    print("\n BEST EFFICIENCY (ROC-AUC / Training Time):")
     df['efficiency'] = df['roc_auc'] / df['train_time']
     avg_eff = df.groupby('model')['efficiency'].mean().sort_values(ascending=False)
     for model, eff in avg_eff.head(5).items():
         print(f"  {model:<15}: {eff:.2f}")
     
-    # Dataset difficulty (lower average ROC = harder)
-    print("\n🎯 DATASET DIFFICULTY (Average ROC-AUC across all models):")
+    print("\nDATASET DIFFICULTY (Average ROC-AUC across all models):")
     dataset_diff = df.groupby('dataset')['roc_auc'].mean().sort_values()
     for dataset, score in dataset_diff.items():
         print(f"  {dataset.capitalize():<15}: {score:.4f}")
@@ -192,13 +167,10 @@ def generate_summary_statistics(df):
     print("\n" + "="*100)
 
 def analyze_model_families(df):
-    """Analyze performance by model family"""
-    
     print("\n" + "="*100)
     print("MODEL FAMILY ANALYSIS")
     print("="*100)
     
-    # Define families
     families = {
         'Isolation Forest': ['IF', 'IF-U', 'EIF-o', 'EIF-t', 'SCiF', 'SCiF-u', 'FCF', 'DEF'],
         'Distance-based': ['LOF'],
@@ -221,8 +193,6 @@ def analyze_model_families(df):
     print("\n" + "="*100)
 
 def main():
-    """Main execution function"""
-    
     print("="*100)
     print("ISOLATION FOREST EXPERIMENTS - ANALYSIS & VISUALIZATION")
     print("="*100)
@@ -237,7 +207,6 @@ def main():
     print(f"Models tested: {len(df['model'].unique())}")
     print(f"Datasets tested: {len(df['dataset'].unique())}")
     
-    # Generate visualizations
     print("\n" + "-"*100)
     print("GENERATING VISUALIZATIONS...")
     print("-"*100)
@@ -248,11 +217,10 @@ def main():
         plot_heatmap(df, 'roc_auc')
         plot_heatmap(df, 'pr_auc')
         plot_time_vs_performance(df)
-        print("\n✓ All visualizations generated successfully!")
+        print("\n All visualizations generated successfully!")
     except Exception as e:
         print(f"\n✗ Visualization error: {e}")
     
-    # Generate analysis
     print("\n" + "-"*100)
     print("GENERATING ANALYSIS...")
     print("-"*100)
@@ -271,6 +239,14 @@ def main():
     print("  - heatmap_pr_auc.png")
     print("  - time_vs_performance.png")
     print("="*100)
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     main()

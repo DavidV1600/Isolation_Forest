@@ -37,8 +37,15 @@ F.~T. Liu, K.~M. Ting, and Z.-H. Zhou, ``On detecting clustered anomalies using
   knowledge discovery in databases}.\hskip 1em plus 0.5em minus 0.4em\relax
   Springer, 2010, pp. 274--290.
 
+\bibitem{cortes2019imputing}
+D.~Cortes, ``Imputing missing values with unsupervised random trees,''
+  \emph{arXiv preprint arXiv:1911.06646}, 2019.
+
 \bibitem{cortes2021revisiting}
-D.~Cortes, ``Revisiting randomized choices in isolation forests,'' \emph{arXiv
+------, ``Revisiting randomized choices in isolation forests,'' \emph{arXiv
   preprint arXiv:2110.13402}, 2021.
+
+\bibitem{cortes2023package}
+D.~Cortes and M.~D. Cortes, ``Package 'isotree','' 2023.
 
 \end{thebibliography}
