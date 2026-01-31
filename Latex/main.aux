@@ -8,86 +8,91 @@
 \citation{liu2008isolation}
 \citation{hariri2019extended}
 \citation{liu2010detecting}
+\citation{cortes2019imputing}
 \citation{cortes2021revisiting}
+\citation{cortes2023package}
 \@writefile{toc}{\contentsline {section}{\numberline {1}Introduction}{1}{section.1}\protected@file@percent }
+\citation{cortes2019imputing}
 \@writefile{toc}{\contentsline {section}{\numberline {2}State of the Art}{2}{section.2}\protected@file@percent }
 \@writefile{toc}{\contentsline {section}{\numberline {3}Algorithm}{3}{section.3}\protected@file@percent }
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.1}Node Splitting Mechanisms}{3}{subsection.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Forest Construction Algorithm}{4}{subsection.3.2}\protected@file@percent }
-\newlabel{forestConstruction}{{3.2}{4}{Forest Construction Algorithm}{subsection.3.2}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.2}Forest Construction Algorithm}{3}{subsection.3.2}\protected@file@percent }
+\newlabel{forestConstruction}{{3.2}{3}{Forest Construction Algorithm}{subsection.3.2}{}}
 \@writefile{toc}{\contentsline {subsection}{\numberline {3.3}Scoring and Anomaly Detection}{4}{subsection.3.3}\protected@file@percent }
 \newlabel{scoring}{{3.3}{4}{Scoring and Anomaly Detection}{subsection.3.3}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Complexity Analysis}{6}{subsection.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}Training Time Complexity}{6}{subsubsection.3.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}Scoring Time Complexity}{6}{subsubsection.3.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.3}Space Complexity}{7}{subsubsection.3.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {4}Implementation}{7}{section.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Models defined}{7}{subsection.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Multi-threading}{7}{subsection.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Tree-level Parallelism}{7}{subsubsection.4.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Prediction Parallelism}{7}{subsubsection.4.2.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Optimizations}{8}{subsection.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Data Structures}{8}{subsection.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}IsoTree: Standard Node Structure}{8}{subsubsection.4.4.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}IsoHPlane: Extended/Hyperplane Node}{8}{subsubsection.4.4.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.3}IsoForest: Complete Model}{9}{subsubsection.4.4.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.4}ExtIsoForest: Extended Model}{9}{subsubsection.4.4.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Design Rationale}{9}{subsection.4.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.5.1}Flat Vector Storage}{9}{subsubsection.4.5.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Benchmarks}{10}{subsection.4.6}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Training time comparison on CovType dataset, 100 trees (lower is better)}}{10}{table.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}Model Quality (AUROC)}{10}{subsection.4.7}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Outlier detection quality on Satellite dataset (higher is better)}}{10}{table.2}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Outlier detection quality on Annthyroid dataset (higher is better)}}{10}{table.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{10}{section.5}\protected@file@percent }
-\newlabel{sec:experiments}{{5}{10}{Experiments}{section.5}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Replicated Results}{10}{subsection.5.1}\protected@file@percent }
-\newlabel{sec:replication}{{5.1}{10}{Replicated Results}{subsection.5.1}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}Experimental Protocol}{10}{subsubsection.5.1.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Datasets used in the partial replication (subset of the paper's Table~5).}}{11}{table.4}\protected@file@percent }
-\newlabel{tab:datasets-summary}{{4}{11}{Datasets used in the partial replication (subset of the paper's Table~5)}{table.4}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}Datasets}{11}{subsubsection.5.1.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.3}Models}{11}{subsubsection.5.1.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.4}Main Replication Results}{11}{subsubsection.5.1.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.5}Discussion}{11}{subsubsection.5.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{No single method dominates across all datasets}{11}{subsubsection.5.1.5}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces ROC-AUC (mean $\pm $ std over 10 seeds). Best per row in bold.}}{12}{table.5}\protected@file@percent }
-\newlabel{tab:roc-results}{{5}{12}{ROC-AUC (mean $\pm $ std over 10 seeds). Best per row in bold}{table.5}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces PR-AUC (mean $\pm $ std over 10 seeds). Best per row in bold.}}{12}{table.6}\protected@file@percent }
-\newlabel{tab:pr-results}{{6}{12}{PR-AUC (mean $\pm $ std over 10 seeds). Best per row in bold}{table.6}{}}
-\@writefile{toc}{\contentsline {paragraph}{Higher-capacity variants help selectively}{12}{subsubsection.5.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Guided splitting can help or hurt depending on the dataset}{12}{subsubsection.5.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{PR-AUC is especially informative for rare outliers}{12}{subsubsection.5.1.5}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Sensitivity Analysis}{12}{subsection.5.2}\protected@file@percent }
-\newlabel{sec:sensitivity}{{5.2}{12}{Sensitivity Analysis}{subsection.5.2}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Sensitivity results on \textbf  {Satellite} (6435$\times $36, 31.64\% outliers). Mean $\pm $ std over 10 seeds.}}{13}{table.7}\protected@file@percent }
-\newlabel{tab:sens-satellite}{{7}{13}{Sensitivity results on \textbf {Satellite} (6435$\times $36, 31.64\% outliers). Mean $\pm $ std over 10 seeds}{table.7}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}Findings}{13}{subsubsection.5.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Capacity is not monotonic}{13}{subsubsection.5.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Subsample size controls locality}{13}{subsubsection.5.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Split geometry has mixed impact}{13}{subsubsection.5.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Guidance strength dominates SCiForest behavior}{13}{subsubsection.5.2.1}\protected@file@percent }
-\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Sensitivity results on \textbf  {Pendigits} (6870$\times $16, 2.27\% outliers). Mean $\pm $ std over 10 seeds.}}{14}{table.8}\protected@file@percent }
-\newlabel{tab:sens-pendigits}{{8}{14}{Sensitivity results on \textbf {Pendigits} (6870$\times $16, 2.27\% outliers). Mean $\pm $ std over 10 seeds}{table.8}{}}
-\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Effect of scoring metric for IF: depth vs density (mean over 10 seeds). Density helps strongly on Satellite/SpamBase/Annthyroid, but is worse on MNIST/Pendigits/Arrhythmia.}}{14}{table.9}\protected@file@percent }
-\newlabel{tab:sens-scoring-metric}{{9}{14}{Effect of scoring metric for IF: depth vs density (mean over 10 seeds). Density helps strongly on Satellite/SpamBase/Annthyroid, but is worse on MNIST/Pendigits/Arrhythmia}{table.9}{}}
-\@writefile{toc}{\contentsline {paragraph}{Scoring metric matters}{14}{subsubsection.5.2.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Reproducibility}{14}{subsection.5.3}\protected@file@percent }
-\newlabel{sec:reproducibility}{{5.3}{14}{Reproducibility}{subsection.5.3}{}}
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Environment}{15}{subsubsection.5.3.1}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.2}Running the experiments}{15}{subsubsection.5.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Replication runs (Section~\ref {sec:replication})}{15}{subsubsection.5.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {paragraph}{Sensitivity runs (Section~\ref {sec:sensitivity})}{15}{subsubsection.5.3.2}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.3}Outputs}{15}{subsubsection.5.3.3}\protected@file@percent }
-\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.4}Determinism}{15}{subsubsection.5.3.4}\protected@file@percent }
-\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion and Future Work}{15}{section.6}\protected@file@percent }
-\newlabel{sec:conclusion}{{6}{15}{Conclusion and Future Work}{section.6}{}}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Conclusion}{15}{subsection.6.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {3.4}Complexity Analysis}{5}{subsection.3.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.1}Training Time Complexity}{5}{subsubsection.3.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.2}Scoring Time Complexity}{5}{subsubsection.3.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {3.4.3}Space Complexity}{5}{subsubsection.3.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {section}{\numberline {4}Implementation}{6}{section.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.1}Models defined}{6}{subsection.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.2}Multi-threading}{6}{subsection.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.1}Tree-level Parallelism}{6}{subsubsection.4.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.2.2}Prediction Parallelism}{6}{subsubsection.4.2.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.3}Optimizations}{6}{subsection.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.4}Data Structures}{6}{subsection.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.1}IsoTree: Standard Node Structure}{6}{subsubsection.4.4.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.2}IsoHPlane: Extended/Hyperplane Node}{6}{subsubsection.4.4.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.3}IsoForest: Complete Model}{7}{subsubsection.4.4.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.4.4}ExtIsoForest: Extended Model}{7}{subsubsection.4.4.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.5}Design Rationale}{7}{subsection.4.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {4.5.1}Flat Vector Storage}{7}{subsubsection.4.5.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.6}Benchmarks}{7}{subsection.4.6}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {1}{\ignorespaces Training time comparison on CovType dataset, 100 trees (lower is better)}}{8}{table.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {4.7}Model Quality (AUROC)}{8}{subsection.4.7}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {2}{\ignorespaces Outlier detection quality on Satellite dataset (higher is better)}}{8}{table.2}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {3}{\ignorespaces Outlier detection quality on Annthyroid dataset (higher is better)}}{8}{table.3}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {4}{\ignorespaces Datasets used in the partial replication (subset of the paper's Table~5).}}{8}{table.4}\protected@file@percent }
+\newlabel{tab:datasets-summary}{{4}{8}{Datasets used in the partial replication (subset of the paper's Table~5)}{table.4}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {5}Experiments}{8}{section.5}\protected@file@percent }
+\newlabel{sec:experiments}{{5}{8}{Experiments}{section.5}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.1}Replicated Results}{8}{subsection.5.1}\protected@file@percent }
+\newlabel{sec:replication}{{5.1}{8}{Replicated Results}{subsection.5.1}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.1}Experimental Protocol}{8}{subsubsection.5.1.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.2}Datasets}{8}{subsubsection.5.1.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.3}Models}{8}{subsubsection.5.1.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.4}Main Replication Results}{9}{subsubsection.5.1.4}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.1.5}Discussion}{9}{subsubsection.5.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{No single method dominates across all datasets}{9}{subsubsection.5.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Higher-capacity variants help selectively}{9}{subsubsection.5.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Guided splitting can help or hurt depending on the dataset}{9}{subsubsection.5.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{PR-AUC is especially informative for rare outliers}{9}{subsubsection.5.1.5}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.2}Sensitivity Analysis}{9}{subsection.5.2}\protected@file@percent }
+\newlabel{sec:sensitivity}{{5.2}{9}{Sensitivity Analysis}{subsection.5.2}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.2.1}Findings}{9}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Capacity is not monotonic}{9}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {5}{\ignorespaces ROC-AUC (mean $\pm $ std over 10 seeds). Best per row in bold.}}{10}{table.5}\protected@file@percent }
+\newlabel{tab:roc-results}{{5}{10}{ROC-AUC (mean $\pm $ std over 10 seeds). Best per row in bold}{table.5}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {6}{\ignorespaces PR-AUC (mean $\pm $ std over 10 seeds). Best per row in bold.}}{10}{table.6}\protected@file@percent }
+\newlabel{tab:pr-results}{{6}{10}{PR-AUC (mean $\pm $ std over 10 seeds). Best per row in bold}{table.6}{}}
+\@writefile{toc}{\contentsline {paragraph}{Subsample size controls locality}{10}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Split geometry has mixed impact}{10}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Guidance strength dominates SCiForest behavior}{10}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Scoring metric matters}{10}{subsubsection.5.2.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsection}{\numberline {5.3}Reproducibility}{10}{subsection.5.3}\protected@file@percent }
+\newlabel{sec:reproducibility}{{5.3}{10}{Reproducibility}{subsection.5.3}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {7}{\ignorespaces Sensitivity results on \textbf  {Satellite} (6435$\times $36, 31.64\% outliers). Mean $\pm $ std over 10 seeds.}}{11}{table.7}\protected@file@percent }
+\newlabel{tab:sens-satellite}{{7}{11}{Sensitivity results on \textbf {Satellite} (6435$\times $36, 31.64\% outliers). Mean $\pm $ std over 10 seeds}{table.7}{}}
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.1}Environment}{11}{subsubsection.5.3.1}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.2}Running the experiments}{11}{subsubsection.5.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Replication runs (Section~\ref {sec:replication})}{11}{subsubsection.5.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {paragraph}{Sensitivity runs (Section~\ref {sec:sensitivity})}{11}{subsubsection.5.3.2}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.3}Outputs}{11}{subsubsection.5.3.3}\protected@file@percent }
+\@writefile{toc}{\contentsline {subsubsection}{\numberline {5.3.4}Determinism}{11}{subsubsection.5.3.4}\protected@file@percent }
+\@writefile{lot}{\contentsline {table}{\numberline {8}{\ignorespaces Sensitivity results on \textbf  {Pendigits} (6870$\times $16, 2.27\% outliers). Mean $\pm $ std over 10 seeds.}}{12}{table.8}\protected@file@percent }
+\newlabel{tab:sens-pendigits}{{8}{12}{Sensitivity results on \textbf {Pendigits} (6870$\times $16, 2.27\% outliers). Mean $\pm $ std over 10 seeds}{table.8}{}}
+\@writefile{lot}{\contentsline {table}{\numberline {9}{\ignorespaces Effect of scoring metric for IF: depth vs density (mean over 10 seeds). Density helps strongly on Satellite/SpamBase/Annthyroid, but is worse on MNIST/Pendigits/Arrhythmia.}}{12}{table.9}\protected@file@percent }
+\newlabel{tab:sens-scoring-metric}{{9}{12}{Effect of scoring metric for IF: depth vs density (mean over 10 seeds). Density helps strongly on Satellite/SpamBase/Annthyroid, but is worse on MNIST/Pendigits/Arrhythmia}{table.9}{}}
+\@writefile{toc}{\contentsline {section}{\numberline {6}Conclusion and Future Work}{12}{section.6}\protected@file@percent }
+\newlabel{sec:conclusion}{{6}{12}{Conclusion and Future Work}{section.6}{}}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.1}Conclusion}{12}{subsection.6.1}\protected@file@percent }
 \bibstyle{IEEEtran}
 \bibdata{citations}
 \bibcite{liu2008isolation}{1}
 \bibcite{hariri2019extended}{2}
 \bibcite{liu2010detecting}{3}
-\bibcite{cortes2021revisiting}{4}
-\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Future Work}{16}{subsection.6.2}\protected@file@percent }
-\gdef \@abspage@last{17}
+\bibcite{cortes2019imputing}{4}
+\bibcite{cortes2021revisiting}{5}
+\bibcite{cortes2023package}{6}
+\@writefile{toc}{\contentsline {subsection}{\numberline {6.2}Future Work}{13}{subsection.6.2}\protected@file@percent }
+\gdef \@abspage@last{14}
