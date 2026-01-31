@@ -65,33 +65,33 @@ The library uses two main node structures for storing splits.
 
 \begin{lstlisting}[language=C++,basicstyle=\ttfamily\small,frame=single,caption={Standard node structure for IF},label={lst:isotree-struct}]
 typedef struct IsoTree {
-    ColType  col_type; 
-    size_t   col_num;
-    double   num_split;
-    std::vector<char> cat_split;
-    int      chosen_cat;
-    size_t   tree_left;
-    size_t   tree_right;
-    double   pct_tree_left;
-    double   score;
-    double   range_low;
+    ColType  col_type;           // Numeric, Categorical, or NotUsed
+    size_t   col_num;            // Column index for split
+    double   num_split;          // Split threshold (numeric)
+    std::vector<char> cat_split; // Bitmap for categorical splits
+    int      chosen_cat;         // Selected category
+    size_t   tree_left;          // Index to left child
+    size_t   tree_right;         // Index to right child
+    double   pct_tree_left;      // Fraction going left
+    double   score;              // Depth/score at node
+    double   range_low;          // Range bounds for penalization
     double   range_high;
-    double   remainder;
+    double   remainder;          // For distance calculations
 } IsoTree;
 \end{lstlisting}
 
 \begin{lstlisting}[language=C++,basicstyle=\ttfamily\small,frame=single,caption={Hyperplane node for EIF/FCF},label={lst:isohplane-struct}]
 typedef struct IsoHPlane {
-    std::vector<size_t>   col_num;
-    std::vector<ColType>  col_type;
-    std::vector<double>   coef;
-    std::vector<double>   mean;
-    std::vector<double>   fill_val;
-    std::vector<std::vector<double>>
+    std::vector<size_t>   col_num;   // Multiple columns
+    std::vector<ColType>  col_type;  // Type per column
+    std::vector<double>   coef;      // Linear combination coeffs
+    std::vector<double>   mean;      // Standardization means
+    std::vector<double>   fill_val;  // Missing value handling
+    std::vector<std::vector<double>> cat_coef; // Categorical coeffs
     
-    double   split_point;
-    size_t   hplane_left;
-    size_t   hplane_right;
+    double   split_point;            // Threshold on combination
+    size_t   hplane_left;            // Left child index
+    size_t   hplane_right;           // Right child index
     double   score;
     double   range_low, range_high;
     double   remainder;
