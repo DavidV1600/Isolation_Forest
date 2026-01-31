@@ -1,4 +1,4 @@
-This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2026/dev/Arch Linux) (preloaded format=pdflatex 2026.1.16)  30 JAN 2026 22:23
+This is pdfTeX, Version 3.141592653-2.6-1.40.27 (TeX Live 2026/dev/Arch Linux) (preloaded format=pdflatex 2026.1.16)  31 JAN 2026 12:11
 entering extended mode
  \write18 enabled.
  file:line:error style messages enabled.
@@ -341,48 +341,54 @@ Package: titlesec 2025/01/04 v2.17 Sectioning titles
 \titlewidth=\dimen185
 \titlewidthlast=\dimen186
 \titlewidthfirst=\dimen187
+) (/usr/share/texmf-dist/tex/latex/multirow/multirow.sty
+Package: multirow 2024/11/12 v2.9 Span multiple rows of a table
+\multirow@colwidth=\skip61
+\multirow@cntb=\count312
+\multirow@dima=\skip62
+\bigstrutjot=\dimen188
 ) (/usr/share/texmf-dist/tex/latex/l3backend/l3backend-pdftex.def
 File: l3backend-pdftex.def 2024-05-08 L3 backend support: PDF output (pdfTeX)
-\l__color_backend_stack_int=\count312
+\l__color_backend_stack_int=\count313
 \l__pdf_internal_box=\box60
 ) (./main.aux)
 \openout1 = `main.aux'.
 
-LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 22.
-LaTeX Font Info:    ... okay on input line 22.
-Package hyperref Info: Link coloring OFF on input line 22.
+LaTeX Font Info:    Checking defaults for OML/cmm/m/it on input line 23.
+LaTeX Font Info:    ... okay on input line 23.
+LaTeX Font Info:    Checking defaults for OMS/cmsy/m/n on input line 23.
+LaTeX Font Info:    ... okay on input line 23.
+LaTeX Font Info:    Checking defaults for OT1/cmr/m/n on input line 23.
+LaTeX Font Info:    ... okay on input line 23.
+LaTeX Font Info:    Checking defaults for T1/cmr/m/n on input line 23.
+LaTeX Font Info:    ... okay on input line 23.
+LaTeX Font Info:    Checking defaults for TS1/cmr/m/n on input line 23.
+LaTeX Font Info:    ... okay on input line 23.
+LaTeX Font Info:    Checking defaults for OMX/cmex/m/n on input line 23.
+LaTeX Font Info:    ... okay on input line 23.
+LaTeX Font Info:    Checking defaults for U/cmr/m/n on input line 23.
+LaTeX Font Info:    ... okay on input line 23.
+LaTeX Font Info:    Checking defaults for PD1/pdf/m/n on input line 23.
+LaTeX Font Info:    ... okay on input line 23.
+LaTeX Font Info:    Checking defaults for PU/pdf/m/n on input line 23.
+LaTeX Font Info:    ... okay on input line 23.
+Package hyperref Info: Link coloring OFF on input line 23.
  (./main.out) (./main.out)
 \@outlinefile=\write3
 \openout3 = `main.out'.
 
  (/usr/share/texmf-dist/tex/context/base/mkii/supp-pdf.mkii
 [Loading MPS to PDF converter (version 2006.09.02).]
-\scratchcounter=\count313
-\scratchdimen=\dimen188
+\scratchcounter=\count314
+\scratchdimen=\dimen189
 \scratchbox=\box61
-\nofMPsegments=\count314
-\nofMParguments=\count315
+\nofMPsegments=\count315
+\nofMParguments=\count316
 \everyMPshowfont=\toks37
-\MPscratchCnt=\count316
-\MPscratchDim=\dimen189
-\MPnumerator=\count317
-\makeMPintoPDFobject=\count318
+\MPscratchCnt=\count317
+\MPscratchDim=\dimen190
+\MPnumerator=\count318
+\makeMPintoPDFobject=\count319
 \everyMPtoPDFconversion=\toks38
 ) (/usr/share/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty
 Package: epstopdf-base 2020-01-24 v2.11 Base part for package epstopdf
@@ -424,7 +430,7 @@ File: epstopdf-sys.cfg 2010/07/13 v1.3 Configuration of (r)epstopdf for TeX Live
 * \@reversemarginfalse
 * (1in=72.27pt=25.4mm, 1cm=28.453pt)
 
-\c@lstlisting=\count319
+\c@lstlisting=\count320
 (./title_page.tex
 LaTeX Font Info:    Trying to load font information for U+msa on input line 14.
  (/usr/share/texmf-dist/tex/latex/amsfonts/umsa.fd
@@ -447,7 +453,7 @@ File: umsb.fd 2013/01/14 v3.01 AMS symbols B
 pdfTeX warning (ext4): destination with the same identifier (name{page.1}) has been already used, duplicate ignored
 <to be read again> 
                    \relax 
-l.32 \newpage
+l.33 \newpage
               [1] (./Stefan/stateOfTheArt.tex
 
 [2{/usr/share/texmf-dist/fonts/enc/dvips/cm-super/cm-super-ts1.enc}]) (./Stefan/algorithm.tex
@@ -467,79 +473,151 @@ File: lstlang1.sty 2024/09/23 1.10c listings language file
 ) (/usr/share/texmf-dist/tex/latex/listings/lstmisc.sty
 File: lstmisc.sty 2024/09/23 1.10c (Carsten Heinz)
 )
-Overfull \hbox (25.97612pt too wide) in paragraph at lines 55--56
+Overfull \hbox (25.97612pt too wide) in paragraph at lines 53--54
 [][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
 
 [8]
-Overfull \hbox (6.37775pt too wide) in paragraph at lines 58--59
+Overfull \hbox (6.37775pt too wide) in paragraph at lines 56--57
 [][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (6.37775pt too wide) in paragraph at lines 64--65
+Overfull \hbox (6.37775pt too wide) in paragraph at lines 62--63
 [][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (6.37775pt too wide) in paragraph at lines 78--79
+Overfull \hbox (6.37775pt too wide) in paragraph at lines 76--77
 [][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (25.97612pt too wide) in paragraph at lines 81--83
+Overfull \hbox (25.97612pt too wide) in paragraph at lines 79--81
 [][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
 
 [9]
-Overfull \hbox (6.37775pt too wide) in paragraph at lines 99--100
+Overfull \hbox (6.37775pt too wide) in paragraph at lines 97--98
 [][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (19.44333pt too wide) in paragraph at lines 101--102
+Overfull \hbox (19.44333pt too wide) in paragraph at lines 99--100
 [][][][][][][][][][][][][][][][][][][][] 
  []
 
 
-Overfull \hbox (32.50891pt too wide) in paragraph at lines 112--113
+Overfull \hbox (32.50891pt too wide) in paragraph at lines 110--111
 [][][][][][][][][][][][][][][][][][][][][][][][][] 
  []
 
 
 
-[10])
+[10]) (./Mina/experiments.tex
 
 [11
 pdfTeX warning (ext4): destination with the same identifier (name{table.1}) has been already used, duplicate ignored
 <argument> ...shipout:D \box_use:N \l_shipout_box 
                                                   \__shipout_drop_firstpage_...
-l.44 \end{document}
-                   ] (./main.aux)
+l.10 
+     
+pdfTeX warning (ext4): destination with the same identifier (name{table.2}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.10 
+     
+pdfTeX warning (ext4): destination with the same identifier (name{table.3}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.10 
+     ]
+Overfull \hbox (40.2351pt too wide) in paragraph at lines 58--113
+ [][] 
+ []
+
+
+Overfull \hbox (40.2351pt too wide) in paragraph at lines 123--178
+ [][] 
+ []
+
+
+
+[12
+pdfTeX warning (ext4): destination with the same identifier (name{table.4}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.183 ...gle method dominates across all datasets}
+                                                  ]
+
+[13
+pdfTeX warning (ext4): destination with the same identifier (name{table.5}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.197 
+      
+pdfTeX warning (ext4): destination with the same identifier (name{table.6}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.197 
+      ]
+Overfull \hbox (1.2285pt too wide) in paragraph at lines 201--203
+\T1/cmr/m/n/10.95 In ad-di-tion to repli-cat-ing the main com-par-isons, we an-a-lyze the sen-si-tiv-ity of the isolation-
+ []
+
+
+
+[14
+pdfTeX warning (ext4): destination with the same identifier (name{table.7}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.331 
+      ]
+
+[15
+pdfTeX warning (ext4): destination with the same identifier (name{table.8}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.343 
+      ]
+Overfull \hbox (8.00156pt too wide) in paragraph at lines 363--364
+[] []\T1/cmr/bx/n/10.95 Repli-ca-tion runs (Sec-tion []4.1[])[] \T1/cmr/m/n/10.95 This script eval-u-ates IF/IF-u/EIF/SCiF/SCiF-u/FCF
+ []
+
+
+
+[16
+pdfTeX warning (ext4): destination with the same identifier (name{table.9}) has been already used, duplicate ignored
+<argument> ...shipout:D \box_use:N \l_shipout_box 
+                                                  \__shipout_drop_firstpage_...
+l.364 \begin{verbatim}
+                      ])
+
+[17] (./main.aux)
  ***********
 LaTeX2e <2024-11-01> patch level 2
 L3 programming layer <2025-01-18>
  ***********
 Package rerunfilecheck Info: File `main.out' has not changed.
-(rerunfilecheck)             Checksum: CB8A603B538A0D830FC3E4BA37338883;3829.
+(rerunfilecheck)             Checksum: 44911732865461F758BBDF3E030877CC;5888.
  ) 
 Here is how much of TeX's memory you used:
- 13824 strings out of 475171
- 203300 string characters out of 5767095
- 847904 words of memory out of 5000000
- 36504 multiletter control sequences out of 15000+600000
- 582938 words of font info for 102 fonts, out of 8000000 for 9000
+ 13961 strings out of 475171
+ 205569 string characters out of 5767095
+ 850819 words of memory out of 5000000
+ 36598 multiletter control sequences out of 15000+600000
+ 586825 words of font info for 111 fonts, out of 8000000 for 9000
  14 hyphenation exceptions out of 8191
- 75i,8n,79p,675b,1930s stack positions out of 10000i,1000n,20000p,200000b,200000s
-</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0700.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1095.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti2488.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
-Output written on main.pdf (12 pages, 378173 bytes).
+ 75i,11n,79p,675b,1930s stack positions out of 10000i,1000n,20000p,200000b,200000s
+</usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmbx6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmex10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmmi8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr6.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmr8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy10.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/cm/cmsy8.pfb></usr/share/texmf-dist/fonts/type1/public/amsfonts/symbols/msbm10.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx0800.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1095.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1200.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx1728.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfbx2488.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0700.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm0800.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1000.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1095.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfrm1440.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti1095.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sfti2488.pfb></usr/share/texmf-dist/fonts/type1/public/cm-super/sftt1095.pfb>
+Output written on main.pdf (18 pages, 484735 bytes).
 PDF statistics:
- 413 PDF objects out of 1000 (max. 8388607)
- 346 compressed objects within 4 object streams
- 119 named destinations out of 1000 (max. 500000)
- 185 words of extra memory for PDF output out of 10000 (max. 10000000)
+ 549 PDF objects out of 1000 (max. 8388607)
+ 469 compressed objects within 5 object streams
+ 146 named destinations out of 1000 (max. 500000)
+ 305 words of extra memory for PDF output out of 10000 (max. 10000000)
 

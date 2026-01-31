@@ -21,3 +21,29 @@
 \contentsline {subsection}{\numberline {3.5}Design Rationale}{10}{subsection.3.5}%
 \contentsline {subsubsection}{\numberline {3.5.1}Flat Vector Storage}{10}{subsubsection.3.5.1}%
 \contentsline {subsection}{\numberline {3.6}Benchmarks}{10}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}Model Quality (AUROC)}{11}{subsection.3.7}%
+\contentsline {section}{\numberline {4}Experiments}{11}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Replicated Results}{11}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Experimental Protocol}{11}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}Datasets}{12}{subsubsection.4.1.2}%
+\contentsline {subsubsection}{\numberline {4.1.3}Models}{12}{subsubsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.4}Main Replication Results}{12}{subsubsection.4.1.4}%
+\contentsline {subsubsection}{\numberline {4.1.5}Discussion}{13}{subsubsection.4.1.5}%
+\contentsline {paragraph}{No single method dominates across all datasets}{13}{subsubsection.4.1.5}%
+\contentsline {paragraph}{Higher-capacity variants help selectively}{13}{subsubsection.4.1.5}%
+\contentsline {paragraph}{Guided splitting can help or hurt depending on the dataset}{13}{subsubsection.4.1.5}%
+\contentsline {paragraph}{PR-AUC is especially informative for rare outliers}{14}{subsubsection.4.1.5}%
+\contentsline {subsection}{\numberline {4.2}Sensitivity Analysis}{14}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Findings}{15}{subsubsection.4.2.1}%
+\contentsline {paragraph}{Capacity is not monotonic}{15}{subsubsection.4.2.1}%
+\contentsline {paragraph}{Subsample size controls locality}{15}{subsubsection.4.2.1}%
+\contentsline {paragraph}{Split geometry has mixed impact}{15}{subsubsection.4.2.1}%
+\contentsline {paragraph}{Guidance strength dominates SCiForest behavior}{16}{subsubsection.4.2.1}%
+\contentsline {paragraph}{Scoring metric matters}{16}{subsubsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.3}Reproducibility}{16}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}Environment}{16}{subsubsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.2}Running the experiments}{16}{subsubsection.4.3.2}%
+\contentsline {paragraph}{Replication runs (Section~\ref {sec:replication})}{17}{subsubsection.4.3.2}%
+\contentsline {paragraph}{Sensitivity runs (Section~\ref {sec:sensitivity})}{17}{subsubsection.4.3.2}%
+\contentsline {subsubsection}{\numberline {4.3.3}Outputs}{17}{subsubsection.4.3.3}%
+\contentsline {subsubsection}{\numberline {4.3.4}Determinism}{17}{subsubsection.4.3.4}%
