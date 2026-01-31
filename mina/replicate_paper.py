@@ -34,11 +34,11 @@ DEFAULT_DATASETS = [
     "annthyroid",
     "mnist",
 ]
-DEFAULT_SEED_COUNT = 10
+DEFAULT_SEED_COUNT = range(10)
 DEFAULT_OUTPUT_DIR = "."
 
 # Model groups
-ISOTREE_MODELS = {"IF", "IF-u", "EIF-o", "EIF-t", "SCiF", "SCiF-u", "FCF"}
+ISOTREE_MODELS = {"IF", "IF-u", "EIF", "SCiF", "SCiF-u", "FCF"}
 
 # Import anomaly detection models
 try:
@@ -151,26 +151,24 @@ def get_model_factories():
             nthreads=-1, random_seed=s
         ),
         # Extended Isolation Forest variants (ndim=2)
-        'EIF-o': lambda s: IsolationForest(
+        "EIF": lambda s: IsolationForest(
             ntrees=100, sample_size=sample_size, ndim=2, max_depth=standard_depth,
+            # Keep it RANDOM. Do not turn on gain-based selection.
             prob_pick_pooled_gain=0.0, prob_pick_avg_gain=0.0,
-            nthreads=-1, random_seed=s
-        ),
-        'EIF-t': lambda s: IsolationForest(
-            ntrees=100, sample_size=sample_size, ndim=2, max_depth=standard_depth,
-            prob_pick_pooled_gain=1.0, prob_pick_avg_gain=0.0,
-            nthreads=-1, random_seed=s
+            nthreads=-1, random_seed=s,
         ),
         # SCiForest: averaged gain, 10 trials
         'SCiF': lambda s: IsolationForest(
             ntrees=100, sample_size=sample_size, ndim=2, ntry=10, max_depth=standard_depth,
             prob_pick_avg_gain=1.0, prob_pick_pooled_gain=0.0,
+            penalize_range=True,
             nthreads=-1, random_seed=s
         ),
         # SCiF-u: 200 trees, unlimited depth (paper variant)
         'SCiF-u': lambda s: IsolationForest(
             ntrees=200, sample_size=sample_size, ndim=2, ntry=10, max_depth=None,
             prob_pick_avg_gain=1.0, prob_pick_pooled_gain=0.0,
+            penalize_range=True,
             nthreads=-1, random_seed=s
         ),
         # Fair-Cut Forest (pooled gain, ntry=1, 200 trees, unlimited depth)
@@ -328,7 +326,7 @@ if __name__ == "__main__":
     os.makedirs(output_dir, exist_ok=True)
 
     test_models = [
-        'IF', 'IF-u', 'EIF-o', 'EIF-t',
+        'IF', 'IF-u', 'EIF',
         'SCiF', 'SCiF-u', 'FCF',
         'LOF', 'OCSVM-rbf', 'OCSVM-linear'
     ]
