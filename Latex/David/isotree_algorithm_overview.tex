@@ -2,15 +2,15 @@
 \section{Implementation}
 %==============================================================================
 
-This section describes the implementation details of the \texttt{isotree} library \cite{isotree}, a high-performance C++ library developed by Cortes that provides unified implementations of all the isolation forest variants discussed in this paper. The library offers Python, R, and C++ interfaces, and serves as the basis for our experimental evaluation.
+This section describes the implementation details of the \texttt{isotree} library \cite{cortes2023package}, a high-performance C++ library developed by Cortes that provides unified implementations of all the isolation forest variants discussed in this paper. The library offers Python, R, and C++ interfaces, and serves as the basis for our experimental evaluation.
 
 \subsection{Models defined}
 %==============================================================================
 \begin{itemize}
-    \item \textbf{iForest}: Original Isolation Forest
-    \item \textbf{EIF}: Extended Isolation Forest
-    \item \textbf{SCiForest}: Split-Criterion Isolation Forest
-    \item \textbf{FCF}: Fair-Cut Forest
+    \item \textbf{iForest}: Original Isolation Forest \cite{liu2008isolation}
+    \item \textbf{EIF}: Extended Isolation Forest \cite{hariri2019extended}
+    \item \textbf{SCiForest}: Split-Criterion Isolation Forest \cite{liu2010detecting}
+    \item \textbf{FCF}: Fair-Cut Forest \cite{cortes2021revisiting}
 \end{itemize}
 
 \subsection{Multi-threading}
@@ -88,7 +88,6 @@ typedef struct IsoHPlane {
     std::vector<double>   mean;      // Standardization means
     std::vector<double>   fill_val;  // Missing value handling
     std::vector<std::vector<double>> cat_coef; // Categorical coeffs
-    
     double   split_point;            // Threshold on combination
     size_t   hplane_left;            // Left child index
     size_t   hplane_right;           // Right child index
