@@ -7,6 +7,8 @@ import os
 
 import replicate_paper as rp
 
+import warnings
+warnings.filterwarnings("ignore")
 
 def run_parameter_sensitivity():
     datasets = [

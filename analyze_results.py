@@ -5,11 +5,11 @@ import seaborn as sns
 import os
 
 def load_results():
-    if not os.path.exists('anomaly_detection_results.csv'):
+    if not os.path.exists('./outputs/anomaly_detection_results.csv'):
         print("No results file found.")
         return None
     
-    df = pd.read_csv('anomaly_detection_results.csv')
+    df = pd.read_csv('./outputs/anomaly_detection_results.csv')
     
     # rows where dataset is NaN or not a string
     df = df.dropna(subset=['dataset'])
@@ -33,8 +33,6 @@ def load_results():
 
 
 def plot_model_comparison(df, metric='roc_auc'):
-    """Create bar plot comparing models across datasets"""
-    
     pivot = df.pivot_table(values=metric, index='model', columns='dataset', aggfunc='first')
     
     fig, ax = plt.subplots(figsize=(14, 8))
@@ -49,13 +47,11 @@ def plot_model_comparison(df, metric='roc_auc'):
     
     plt.xticks(rotation=45, ha='right')
     plt.tight_layout()
-    plt.savefig(f'comparison_{metric}.png', dpi=300, bbox_inches='tight')
-    print(f"✓ Saved comparison_{metric}.png")
+    plt.savefig(f'./outputs/comparison_{metric}.png', dpi=300, bbox_inches='tight')
+    print(f" Saved comparison_{metric}.png")
     plt.close()
 
 def plot_time_vs_performance(df):
-    """Plot training time vs performance trade-off"""
-    
     fig, axes = plt.subplots(1, 2, figsize=(16, 6))
     
     datasets = df['dataset'].unique()
@@ -100,8 +96,8 @@ def plot_time_vs_performance(df):
     axes[1].set_xscale('symlog', linthresh=1e-4)
     
     plt.tight_layout()
-    plt.savefig('time_vs_performance.png', dpi=300, bbox_inches='tight')
-    print("✓ Saved time_vs_performance.png")
+    plt.savefig('./outputs/time_vs_performance.png', dpi=300, bbox_inches='tight')
+    print(" Saved time_vs_performance.png")
     plt.close()
 
 def plot_heatmap(df, metric='roc_auc'):
@@ -117,8 +113,8 @@ def plot_heatmap(df, metric='roc_auc'):
     ax.set_ylabel('Model', fontsize=12)
     
     plt.tight_layout()
-    plt.savefig(f'heatmap_{metric}.png', dpi=300, bbox_inches='tight')
-    print(f"✓ Saved heatmap_{metric}.png")
+    plt.savefig(f'./outputs/heatmap_{metric}.png', dpi=300, bbox_inches='tight')
+    print(f" Saved heatmap_{metric}.png")
     plt.close()
 
 def generate_ranking_table(df):
@@ -171,8 +167,6 @@ def generate_summary_statistics(df):
     print("\n" + "="*100)
 
 def analyze_model_families(df):
-    """Analyze performance by model family"""
-    
     print("\n" + "="*100)
     print("MODEL FAMILY ANALYSIS")
     print("="*100)
@@ -223,7 +217,7 @@ def main():
         plot_heatmap(df, 'roc_auc')
         plot_heatmap(df, 'pr_auc')
         plot_time_vs_performance(df)
-        print("\n✓ All visualizations generated successfully!")
+        print("\n All visualizations generated successfully!")
     except Exception as e:
         print(f"\n✗ Visualization error: {e}")
     
