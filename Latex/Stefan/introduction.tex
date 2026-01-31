@@ -1,0 +1,18 @@
+\section{Introduction}
+
+\noindent Anomaly detection, the identification of rare items or events that deviate significantly from the majority of a dataset, is a fundamental challenge in data science and machine learning. In the era of big data, the ability to distinguish "normal" patterns from "anomalous" ones has become critical for ensuring system security, operational efficiency, and data integrity across diverse domains.
+
+The core difficulty in anomaly detection lies in the fact that anomalies are, by definition, infrequent and often ill-defined. Traditional supervised learning approaches are frequently impractical because labeled datasets of anomalies are scarce or non-existent. Furthermore, in high-dimensional spaces, the "curse of dimensionality" makes it increasingly difficult to define a clear boundary for normal behavior. Most detection tasks operate under two fundamental assumptions: first, that anomalies are the minority, and second, that they possess attribute values that differ significantly from those of normal instances (different).
+
+Historically, anomaly detection has relied on distance-based or density-based techniques. Methods such as $k$-Nearest Neighbors (k-NN) and Local Outlier Factor (LOF) identify anomalies by calculating distances between points or measuring local density. However, these approaches suffer from significant computational overhead, often requiring quadratic time complexity $O(n^2)$, which limits their scalability to large-scale datasets. Moreover, they are primarily designed to profile "normal" data points, essentially defining anomalies as those that do not fit the profile.
+
+In contrast, isolation-based methods—pioneered by the Isolation Forest (IF) \cite{liu2008isolation}—shift the paradigm by focusing explicitly on the isolation of anomalies rather than the profiling of normal data. By recursively partitioning the data using random splits, these methods exploit the fact that anomalies are easier to isolate and thus appear at shallower depths in a tree structure. This approach offers linear time complexity and low memory requirements. Subsequent iterations, such as the Extended Isolation Forest (EIF) \cite{hariri2019extended} and SCiForest \cite{liu2010detecting}, have sought to improve upon the original model by addressing geometric artifacts and optimizing split criteria.
+
+Recent efforts to optimize these algorithms have focused on computational efficiency and the flexibility of split criteria. A notable contribution in this area is the work by Cortes \cite{cortes2021revisiting}, which introduces the \texttt{isotree} implementation. This work revisits the randomized choices in isolation forests, providing a high-performance framework that not only unifies the original IF, EIF, and SCiForest models but also introduces optimizations that significantly outperform traditional implementations in Python-based libraries like \texttt{scikit-learn} and \texttt{H2O}. Our study utilizes these benchmarks as a foundation for comparing the scalability of different isolation-based strategies.
+
+In this paper, we provide a comprehensive comparative analysis of modern isolation-based techniques. Our primary contributions are as follows:
+\begin{itemize}
+    \item We detail the mathematical formulations of the split selection processes for IF, EIF, and SCiForest.
+    \item We benchmark the computational efficiency of these algorithms using various sampling sizes to evaluate scalability.
+    \item We analyze the impact of guided versus random hyperplanes on detection accuracy across high-dimensional datasets.
+\end{itemize}

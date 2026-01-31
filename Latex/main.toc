@@ -1,49 +1,50 @@
-\contentsline {section}{\numberline {1}State of the Art}{2}{section.1}%
-\contentsline {section}{\numberline {2}Algorithm}{3}{section.2}%
-\contentsline {subsection}{\numberline {2.1}Node Splitting Mechanisms}{3}{subsection.2.1}%
-\contentsline {subsection}{\numberline {2.2}Forest Construction Algorithm}{4}{subsection.2.2}%
-\contentsline {subsection}{\numberline {2.3}Scoring and Anomaly Detection}{5}{subsection.2.3}%
-\contentsline {subsection}{\numberline {2.4}Complexity Analysis}{6}{subsection.2.4}%
-\contentsline {subsubsection}{\numberline {2.4.1}Training Time Complexity}{6}{subsubsection.2.4.1}%
-\contentsline {subsubsection}{\numberline {2.4.2}Scoring Time Complexity}{7}{subsubsection.2.4.2}%
-\contentsline {subsubsection}{\numberline {2.4.3}Space Complexity}{7}{subsubsection.2.4.3}%
-\contentsline {section}{\numberline {3}Implementation}{8}{section.3}%
-\contentsline {subsection}{\numberline {3.1}Models defined}{8}{subsection.3.1}%
-\contentsline {subsection}{\numberline {3.2}Multi-threading}{8}{subsection.3.2}%
-\contentsline {subsubsection}{\numberline {3.2.1}Tree-level Parallelism}{8}{subsubsection.3.2.1}%
-\contentsline {subsubsection}{\numberline {3.2.2}Prediction Parallelism}{8}{subsubsection.3.2.2}%
-\contentsline {subsection}{\numberline {3.3}Optimizations}{8}{subsection.3.3}%
-\contentsline {subsection}{\numberline {3.4}Data Structures}{9}{subsection.3.4}%
-\contentsline {subsubsection}{\numberline {3.4.1}IsoTree: Standard Node Structure}{9}{subsubsection.3.4.1}%
-\contentsline {subsubsection}{\numberline {3.4.2}IsoHPlane: Extended/Hyperplane Node}{9}{subsubsection.3.4.2}%
-\contentsline {subsubsection}{\numberline {3.4.3}IsoForest: Complete Model}{9}{subsubsection.3.4.3}%
-\contentsline {subsubsection}{\numberline {3.4.4}ExtIsoForest: Extended Model}{10}{subsubsection.3.4.4}%
-\contentsline {subsection}{\numberline {3.5}Design Rationale}{10}{subsection.3.5}%
-\contentsline {subsubsection}{\numberline {3.5.1}Flat Vector Storage}{10}{subsubsection.3.5.1}%
-\contentsline {subsection}{\numberline {3.6}Benchmarks}{10}{subsection.3.6}%
-\contentsline {subsection}{\numberline {3.7}Model Quality (AUROC)}{11}{subsection.3.7}%
-\contentsline {section}{\numberline {4}Experiments}{11}{section.4}%
-\contentsline {subsection}{\numberline {4.1}Replicated Results}{11}{subsection.4.1}%
-\contentsline {subsubsection}{\numberline {4.1.1}Experimental Protocol}{11}{subsubsection.4.1.1}%
-\contentsline {subsubsection}{\numberline {4.1.2}Datasets}{12}{subsubsection.4.1.2}%
-\contentsline {subsubsection}{\numberline {4.1.3}Models}{12}{subsubsection.4.1.3}%
-\contentsline {subsubsection}{\numberline {4.1.4}Main Replication Results}{12}{subsubsection.4.1.4}%
-\contentsline {subsubsection}{\numberline {4.1.5}Discussion}{13}{subsubsection.4.1.5}%
-\contentsline {paragraph}{No single method dominates across all datasets}{13}{subsubsection.4.1.5}%
-\contentsline {paragraph}{Higher-capacity variants help selectively}{13}{subsubsection.4.1.5}%
-\contentsline {paragraph}{Guided splitting can help or hurt depending on the dataset}{13}{subsubsection.4.1.5}%
-\contentsline {paragraph}{PR-AUC is especially informative for rare outliers}{14}{subsubsection.4.1.5}%
-\contentsline {subsection}{\numberline {4.2}Sensitivity Analysis}{14}{subsection.4.2}%
-\contentsline {subsubsection}{\numberline {4.2.1}Findings}{15}{subsubsection.4.2.1}%
-\contentsline {paragraph}{Capacity is not monotonic}{15}{subsubsection.4.2.1}%
-\contentsline {paragraph}{Subsample size controls locality}{15}{subsubsection.4.2.1}%
-\contentsline {paragraph}{Split geometry has mixed impact}{15}{subsubsection.4.2.1}%
-\contentsline {paragraph}{Guidance strength dominates SCiForest behavior}{16}{subsubsection.4.2.1}%
-\contentsline {paragraph}{Scoring metric matters}{16}{subsubsection.4.2.1}%
-\contentsline {subsection}{\numberline {4.3}Reproducibility}{16}{subsection.4.3}%
-\contentsline {subsubsection}{\numberline {4.3.1}Environment}{16}{subsubsection.4.3.1}%
-\contentsline {subsubsection}{\numberline {4.3.2}Running the experiments}{16}{subsubsection.4.3.2}%
-\contentsline {paragraph}{Replication runs (Section~\ref {sec:replication})}{17}{subsubsection.4.3.2}%
-\contentsline {paragraph}{Sensitivity runs (Section~\ref {sec:sensitivity})}{17}{subsubsection.4.3.2}%
-\contentsline {subsubsection}{\numberline {4.3.3}Outputs}{17}{subsubsection.4.3.3}%
-\contentsline {subsubsection}{\numberline {4.3.4}Determinism}{17}{subsubsection.4.3.4}%
+\babel@toc {english}{}\relax 
+\contentsline {section}{\numberline {1}State of the Art}{1}{section.1}%
+\contentsline {section}{\numberline {2}Algorithm}{2}{section.2}%
+\contentsline {subsection}{\numberline {2.1}Node Splitting Mechanisms}{2}{subsection.2.1}%
+\contentsline {subsection}{\numberline {2.2}Forest Construction Algorithm}{3}{subsection.2.2}%
+\contentsline {subsection}{\numberline {2.3}Scoring and Anomaly Detection}{3}{subsection.2.3}%
+\contentsline {subsection}{\numberline {2.4}Complexity Analysis}{4}{subsection.2.4}%
+\contentsline {subsubsection}{\numberline {2.4.1}Training Time Complexity}{4}{subsubsection.2.4.1}%
+\contentsline {subsubsection}{\numberline {2.4.2}Scoring Time Complexity}{4}{subsubsection.2.4.2}%
+\contentsline {subsubsection}{\numberline {2.4.3}Space Complexity}{5}{subsubsection.2.4.3}%
+\contentsline {section}{\numberline {3}Implementation}{5}{section.3}%
+\contentsline {subsection}{\numberline {3.1}Models defined}{5}{subsection.3.1}%
+\contentsline {subsection}{\numberline {3.2}Multi-threading}{5}{subsection.3.2}%
+\contentsline {subsubsection}{\numberline {3.2.1}Tree-level Parallelism}{5}{subsubsection.3.2.1}%
+\contentsline {subsubsection}{\numberline {3.2.2}Prediction Parallelism}{5}{subsubsection.3.2.2}%
+\contentsline {subsection}{\numberline {3.3}Optimizations}{5}{subsection.3.3}%
+\contentsline {subsection}{\numberline {3.4}Data Structures}{5}{subsection.3.4}%
+\contentsline {subsubsection}{\numberline {3.4.1}IsoTree: Standard Node Structure}{5}{subsubsection.3.4.1}%
+\contentsline {subsubsection}{\numberline {3.4.2}IsoHPlane: Extended/Hyperplane Node}{6}{subsubsection.3.4.2}%
+\contentsline {subsubsection}{\numberline {3.4.3}IsoForest: Complete Model}{6}{subsubsection.3.4.3}%
+\contentsline {subsubsection}{\numberline {3.4.4}ExtIsoForest: Extended Model}{6}{subsubsection.3.4.4}%
+\contentsline {subsection}{\numberline {3.5}Design Rationale}{6}{subsection.3.5}%
+\contentsline {subsubsection}{\numberline {3.5.1}Flat Vector Storage}{6}{subsubsection.3.5.1}%
+\contentsline {subsection}{\numberline {3.6}Benchmarks}{7}{subsection.3.6}%
+\contentsline {subsection}{\numberline {3.7}Model Quality (AUROC)}{7}{subsection.3.7}%
+\contentsline {section}{\numberline {4}Experiments}{7}{section.4}%
+\contentsline {subsection}{\numberline {4.1}Replicated Results}{7}{subsection.4.1}%
+\contentsline {subsubsection}{\numberline {4.1.1}Experimental Protocol}{7}{subsubsection.4.1.1}%
+\contentsline {subsubsection}{\numberline {4.1.2}Datasets}{7}{subsubsection.4.1.2}%
+\contentsline {subsubsection}{\numberline {4.1.3}Models}{8}{subsubsection.4.1.3}%
+\contentsline {subsubsection}{\numberline {4.1.4}Main Replication Results}{8}{subsubsection.4.1.4}%
+\contentsline {subsubsection}{\numberline {4.1.5}Discussion}{8}{subsubsection.4.1.5}%
+\contentsline {paragraph}{No single method dominates across all datasets}{8}{subsubsection.4.1.5}%
+\contentsline {paragraph}{Higher-capacity variants help selectively}{8}{subsubsection.4.1.5}%
+\contentsline {paragraph}{Guided splitting can help or hurt depending on the dataset}{8}{subsubsection.4.1.5}%
+\contentsline {paragraph}{PR-AUC is especially informative for rare outliers}{8}{subsubsection.4.1.5}%
+\contentsline {subsection}{\numberline {4.2}Sensitivity Analysis}{8}{subsection.4.2}%
+\contentsline {subsubsection}{\numberline {4.2.1}Findings}{9}{subsubsection.4.2.1}%
+\contentsline {paragraph}{Capacity is not monotonic}{9}{subsubsection.4.2.1}%
+\contentsline {paragraph}{Subsample size controls locality}{9}{subsubsection.4.2.1}%
+\contentsline {paragraph}{Split geometry has mixed impact}{9}{subsubsection.4.2.1}%
+\contentsline {paragraph}{Guidance strength dominates SCiForest behavior}{9}{subsubsection.4.2.1}%
+\contentsline {paragraph}{Scoring metric matters}{9}{subsubsection.4.2.1}%
+\contentsline {subsection}{\numberline {4.3}Reproducibility}{10}{subsection.4.3}%
+\contentsline {subsubsection}{\numberline {4.3.1}Environment}{10}{subsubsection.4.3.1}%
+\contentsline {subsubsection}{\numberline {4.3.2}Running the experiments}{10}{subsubsection.4.3.2}%
+\contentsline {paragraph}{Replication runs (Section~\ref {sec:replication})}{10}{subsubsection.4.3.2}%
+\contentsline {paragraph}{Sensitivity runs (Section~\ref {sec:sensitivity})}{10}{subsubsection.4.3.2}%
+\contentsline {subsubsection}{\numberline {4.3.3}Outputs}{10}{subsubsection.4.3.3}%
+\contentsline {subsubsection}{\numberline {4.3.4}Determinism}{11}{subsubsection.4.3.4}%

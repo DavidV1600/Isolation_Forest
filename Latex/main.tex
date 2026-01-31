@@ -1,4 +1,7 @@
-\documentclass[11pt,a4paper]{article}
+\documentclass[a4paper,10pt,english]{article}
+%---------------------------------------------------------
+\usepackage{babel}
+\usepackage{bm}
 
 % Packages
 \usepackage[utf8]{inputenc}
@@ -29,17 +32,23 @@
 
 % 2. Table of Contents
 \newpage
-\tableofcontents
+% \tableofcontents
 \newpage
 % 3. Import Sections
 % Use \input for standard sections. 
 % Use \include only if you need a guaranteed page break before and after (like chapters).
 
+\input{David/abstract.tex}
+\input{Stefan/introduction.tex}
 \input{Stefan/stateOfTheArt.tex}
 \input{Stefan/algorithm.tex}
 \input{David/isotree_algorithm_overview.tex}
 \input{Mina/experiments.tex}
+\input{Mina/conclusion.tex}
 
 % \input{sections/conclusion}
+
+\bibliographystyle{IEEEtran}
+\bibliography{citations}
 
 \end{document}
