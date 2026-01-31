@@ -1,0 +1,387 @@
+\section{Experiments}
+\label{sec:experiments}
+
+\subsection{Replicated Results}
+\label{sec:replication}
+
+\subsubsection{Experimental Protocol}
+We follow the paper's evaluation protocol for isolation-forest-style methods: for each dataset, we (i) fit each model in an unsupervised manner on the full dataset $X$, (ii) compute anomaly scores for the same full dataset, and (iii) evaluate against the provided binary labels using ROC-AUC and PR-AUC.
+All results are averaged over 10 random seeds (seeds 0--9), reporting mean $\pm$ standard deviation.
+
+\subsubsection{Datasets}
+The original paper reports results on nine benchmark datasets (Table~5 in the original paper). In this project we perform a \emph{partial replication} on a 7/9 subset due to data/time constraints. Table~\ref{tab:datasets-summary} summarizes the datasets used and the fraction of outliers.
+
+\begin{table}[t]
+\centering
+\caption{Datasets used in the partial replication (subset of the paper's Table~5).}
+\label{tab:datasets-summary}
+\small
+\setlength{\tabcolsep}{6pt}
+\begin{tabular}{lrrr}
+\toprule
+Dataset & $n$ & $d$ & Outliers (\%) \\
+\midrule
+Arrhythmia & 452  & 274 & 14.60 \\
+Pima       & 768  & 8   & 34.90 \\
+SpamBase   & 4601 & 57  & 39.40 \\
+Satellite  & 6435 & 36  & 31.64 \\
+Pendigits  & 6870 & 16  & 2.27 \\
+Annthyroid & 7200 & 6   & 7.42 \\
+MNIST      & 7603 & 100 & 9.21 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Models}
+We evaluate the isolation-forest family variants emphasized in the paper:
+\textbf{IF} (standard isolation forest), \textbf{IF-u} (higher-capacity variant with more trees and unlimited depth),
+\textbf{EIF} (extended splits with $ndim=2$ under random splitting), \textbf{SCiF} and \textbf{SCiF-u} (guided splits using average gain with range penalty enabled),
+and \textbf{FCF} (pooled-gain guided splitting; Fair-Cut-style).
+All methods are implemented using the authors' \texttt{isotree} library with parameters selected to match the intended definitions of these model families.
+
+The paper reports two EIF implementations (EIF-o and EIF-t); in this project we use a single EIF-style configuration (ndim=2 random hyperplane splits) from the authors’ isotree library.
+
+\subsubsection{Main Replication Results}
+Tables~\ref{tab:roc-results} and~\ref{tab:pr-results} report ROC-AUC and PR-AUC, respectively, as mean $\pm$ std over 10 seeds.
+Within each dataset row we highlight the best performing method in bold. These tables constitute the core replicated results under the paper-style protocol.
+
+For the overlapping datasets/models, our ROC/PR are in the same range as the paper and preserve the qualitative rankings (e.g., FCF strong on Satellite; SCiF-u strong on Annthyroid). Differences are expected due to implementation differences (single EIF config vs EIF-o/EIF-t) and dataset preprocessing.
+
+% --- ROC table ---
+\begin{table*}[t]
+\centering
+\caption{ROC-AUC (mean $\pm$ std over 10 seeds). Best per row in bold.}
+\label{tab:roc-results}
+\scriptsize
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{lcccccc}
+\toprule
+Dataset & IF & IF-u & EIF & SCiF & SCiF-u & FCF \\
+\midrule
+Arrhythmia &
+0.8054$\pm$0.0016 &
+\textbf{0.8081$\pm$0.0005} &
+0.7817$\pm$0.0008 &
+0.7004$\pm$0.0007 &
+0.7388$\pm$0.0004 &
+0.7893$\pm$0.0004 \\
+Pima &
+0.6950$\pm$0.0021 &
+0.6734$\pm$0.0008 &
+0.6852$\pm$0.0011 &
+0.6150$\pm$0.0005 &
+0.6580$\pm$0.0002 &
+\textbf{0.7356$\pm$0.0005} \\
+SpamBase &
+0.6403$\pm$0.0043 &
+0.7134$\pm$0.0008 &
+0.5858$\pm$0.0046 &
+0.4696$\pm$0.0011 &
+0.4268$\pm$0.0002 &
+\textbf{0.7163$\pm$0.0011} \\
+Satellite &
+0.6929$\pm$0.0060 &
+0.7053$\pm$0.0008 &
+0.6802$\pm$0.0021 &
+0.6041$\pm$0.0021 &
+0.7450$\pm$0.0003 &
+\textbf{0.8151$\pm$0.0007} \\
+Pendigits &
+0.9587$\pm$0.0025 &
+0.9500$\pm$0.0010 &
+0.9621$\pm$0.0011 &
+0.9819$\pm$0.0006 &
+\textbf{0.9844$\pm$0.0002} &
+0.9529$\pm$0.0007 \\
+Annthyroid &
+0.7963$\pm$0.0037 &
+0.8334$\pm$0.0011 &
+0.8177$\pm$0.0041 &
+0.7928$\pm$0.0002 &
+\textbf{0.9661$\pm$0.0001} &
+0.8613$\pm$0.0006 \\
+MNIST &
+0.8236$\pm$0.0021 &
+0.8035$\pm$0.0009 &
+0.8385$\pm$0.0049 &
+\textbf{0.8586$\pm$0.0021} &
+0.8443$\pm$0.0011 &
+0.7934$\pm$0.0005 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% --- PR table ---
+\begin{table*}[t]
+\centering
+\caption{PR-AUC (mean $\pm$ std over 10 seeds). Best per row in bold.}
+\label{tab:pr-results}
+\scriptsize
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{lcccccc}
+\toprule
+Dataset & IF & IF-u & EIF & SCiF & SCiF-u & FCF \\
+\midrule
+Arrhythmia &
+0.4409$\pm$0.0061 &
+\textbf{0.4755$\pm$0.0031} &
+0.4570$\pm$0.0032 &
+0.3276$\pm$0.0015 &
+0.3540$\pm$0.0020 &
+0.4482$\pm$0.0051 \\
+Pima &
+0.5127$\pm$0.0018 &
+0.5000$\pm$0.0009 &
+0.5050$\pm$0.0014 &
+0.4250$\pm$0.0004 &
+0.4578$\pm$0.0003 &
+\textbf{0.5596$\pm$0.0007} \\
+SpamBase &
+0.4884$\pm$0.0049 &
+\textbf{0.5544$\pm$0.0014} &
+0.4429$\pm$0.0042 &
+0.3778$\pm$0.0007 &
+0.3478$\pm$0.0002 &
+0.5466$\pm$0.0015 \\
+Satellite &
+0.6410$\pm$0.0024 &
+0.6603$\pm$0.0008 &
+0.6144$\pm$0.0022 &
+0.5871$\pm$0.0011 &
+0.6822$\pm$0.0006 &
+\textbf{0.7236$\pm$0.0015} \\
+Pendigits &
+0.2958$\pm$0.0106 &
+0.2765$\pm$0.0059 &
+0.2616$\pm$0.0064 &
+0.4197$\pm$0.0095 &
+\textbf{0.4297$\pm$0.0029} &
+0.2493$\pm$0.0042 \\
+Annthyroid &
+0.2755$\pm$0.0034 &
+0.3075$\pm$0.0021 &
+0.2985$\pm$0.0048 &
+0.5057$\pm$0.0008 &
+\textbf{0.6558$\pm$0.0003} &
+0.3737$\pm$0.0009 \\
+MNIST &
+0.2944$\pm$0.0028 &
+0.2774$\pm$0.0024 &
+0.3349$\pm$0.0097 &
+\textbf{0.4000$\pm$0.0034} &
+0.3732$\pm$0.0025 &
+0.2751$\pm$0.0013 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+\subsubsection{Discussion}
+Several trends match the qualitative conclusions of the paper.
+
+\paragraph{No single method dominates across all datasets}
+We observe dataset-dependent behavior: FCF performs best on Pima and Satellite (both ROC-AUC and PR-AUC), while SCiF-u is strongest on Pendigits and Annthyroid, and SCiF is best on MNIST. This supports the paper's central message that different randomized/guided splitting choices can be beneficial depending on the data distribution.
+
+\paragraph{Higher-capacity variants help selectively}
+Increasing capacity (more trees and unlimited depth, the ``-u'' variants) improves Arrhythmia for IF and strongly boosts SCiF on Satellite and Annthyroid.
+However, IF-u slightly underperforms IF on MNIST, indicating that additional capacity is not universally beneficial under the full-data evaluation protocol.
+
+\paragraph{Guided splitting can help or hurt depending on the dataset}
+SCiF/SCiF-u excel on Pendigits, Annthyroid, and MNIST, but perform poorly on SpamBase relative to IF-u and FCF.
+This suggests that gain-guided splitting may amplify dataset-specific artifacts: it can isolate informative structure in some datasets, while leading to suboptimal partitions in others.
+
+\paragraph{PR-AUC is especially informative for rare outliers}
+On Pendigits (2.27\% outliers), ROC-AUC is high for multiple methods, yet PR-AUC distinguishes the guided methods (SCiF/SCiF-u) more clearly from the random-split baselines.
+This aligns with the motivation for reporting both ROC-AUC and PR-AUC in anomaly detection.
+
+\subsection{Sensitivity Analysis}
+\label{sec:sensitivity}
+
+In addition to replicating the main comparisons, we analyze the sensitivity of the isolation-forest family to key hyperparameters that control (i) model capacity (number of trees and depth limit), (ii) locality and stability (subsample size), (iii) split geometry (axis-aligned vs random hyperplane splits), (iv) the strength of guidance in SCiForest ($ntry$ and range penalty), and (v) the scoring rule (depth vs density).
+All sensitivity results follow the same evaluation protocol as in Section~\ref{sec:replication}: unsupervised fit on the full dataset, scoring on the full dataset, and mean $\pm$ std over 10 random seeds (0--9).
+
+To keep the presentation compact, we show full sweep tables for two representative datasets (\textbf{Satellite} and \textbf{Pendigits}), plus one smaller table highlighting the scoring-metric effect across all datasets. The full CSV outputs for all datasets are included in the repository.
+
+% -------------------------
+% Table: Satellite full sweeps
+% -------------------------
+\begin{table*}[t]
+\centering
+\caption{Sensitivity results on \textbf{Satellite} (6435$\times$36, 31.64\% outliers). Mean $\pm$ std over 10 seeds.}
+\label{tab:sens-satellite}
+\scriptsize
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{llccc}
+\toprule
+Sweep & Configuration & ROC-AUC & PR-AUC & Time (s) \\
+\midrule
+\multirow{4}{*}{IF depth \& trees}
+& IF\_t100\_d8    & 0.6929$\pm$0.0060 & 0.6410$\pm$0.0024 & 0.028 \\
+& IF\_t200\_d8    & 0.6872$\pm$0.0030 & 0.6381$\pm$0.0012 & 0.062 \\
+& IF\_t100\_dNone & 0.6955$\pm$0.0024 & 0.6410$\pm$0.0020 & 0.087 \\
+& IF\_t200\_dNone & 0.7053$\pm$0.0008 & 0.6603$\pm$0.0008 & 0.171 \\
+\midrule
+\multirow{4}{*}{IF sample\_size}
+& IF\_s64  & 0.6768$\pm$0.0017 & 0.6648$\pm$0.0020 & 0.030 \\
+& IF\_s128 & 0.7011$\pm$0.0062 & 0.6830$\pm$0.0039 & 0.029 \\
+& IF\_s256 & 0.6929$\pm$0.0060 & 0.6410$\pm$0.0024 & 0.028 \\
+& IF\_s512 & 0.6966$\pm$0.0028 & 0.6481$\pm$0.0032 & 0.028 \\
+\midrule
+\multirow{2}{*}{Split geometry}
+& ndim1\_random & 0.6929$\pm$0.0060 & 0.6410$\pm$0.0024 & 0.029 \\
+& ndim2\_random & 0.6949$\pm$0.0028 & 0.6490$\pm$0.0028 & 0.084 \\
+\midrule
+\multirow{4}{*}{FCF trees \& sample\_size}
+& FCF\_t100\_s256 & 0.8173$\pm$0.0006 & 0.7267$\pm$0.0011 & 0.120 \\
+& FCF\_t200\_s256 & 0.8246$\pm$0.0005 & 0.7356$\pm$0.0009 & 0.264 \\
+& FCF\_t200\_s128 & \textbf{0.8373$\pm$0.0006} & \textbf{0.7660$\pm$0.0013} & 0.186 \\
+& FCF\_t200\_s512 & 0.8139$\pm$0.0008 & 0.7020$\pm$0.0019 & 0.371 \\
+\midrule
+\multirow{3}{*}{SCiF $ntry$ \& range penalty}
+& SCiF\_ntry1\_pen0  & 0.6116$\pm$0.0039 & 0.6163$\pm$0.0030 & 0.078 \\
+& SCiF\_ntry10\_pen0 & 0.6082$\pm$0.0051 & 0.5890$\pm$0.0031 & 0.208 \\
+& SCiF\_ntry10\_pen1 & 0.6104$\pm$0.0049 & 0.5910$\pm$0.0031 & 0.211 \\
+\midrule
+\multirow{2}{*}{Scoring metric (IF)}
+& IF\_score\_depth   & 0.6929$\pm$0.0060 & 0.6410$\pm$0.0024 & 0.028 \\
+& IF\_score\_density & \textbf{0.8324$\pm$0.0020} & \textbf{0.7574$\pm$0.0020} & 0.029 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% -------------------------
+% Table: Pendigits full sweeps
+% -------------------------
+\begin{table*}[t]
+\centering
+\caption{Sensitivity results on \textbf{Pendigits} (6870$\times$16, 2.27\% outliers). Mean $\pm$ std over 10 seeds.}
+\label{tab:sens-pendigits}
+\scriptsize
+\setlength{\tabcolsep}{4.5pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{llccc}
+\toprule
+Sweep & Configuration & ROC-AUC & PR-AUC & Time (s) \\
+\midrule
+\multirow{4}{*}{IF depth \& trees}
+& IF\_t100\_d8    & 0.9587$\pm$0.0025 & 0.2958$\pm$0.0106 & 0.033 \\
+& IF\_t200\_d8    & \textbf{0.9625$\pm$0.0006} & \textbf{0.3134$\pm$0.0030} & 0.070 \\
+& IF\_t100\_dNone & 0.9465$\pm$0.0033 & 0.2741$\pm$0.0117 & 0.080 \\
+& IF\_t200\_dNone & 0.9500$\pm$0.0010 & 0.2765$\pm$0.0059 & 0.171 \\
+\midrule
+\multirow{4}{*}{IF sample\_size}
+& IF\_s64  & 0.9201$\pm$0.0032 & 0.2157$\pm$0.0063 & 0.037 \\
+& IF\_s128 & 0.9401$\pm$0.0007 & 0.2722$\pm$0.0120 & 0.034 \\
+& IF\_s256 & \textbf{0.9587$\pm$0.0025} & \textbf{0.2958$\pm$0.0106} & 0.033 \\
+& IF\_s512 & 0.9416$\pm$0.0011 & 0.2675$\pm$0.0058 & 0.032 \\
+\midrule
+\multirow{2}{*}{Split geometry}
+& ndim1\_random & \textbf{0.9587$\pm$0.0025} & \textbf{0.2958$\pm$0.0106} & 0.033 \\
+& ndim2\_random & 0.9511$\pm$0.0016 & 0.2212$\pm$0.0060 & 0.093 \\
+\midrule
+\multirow{4}{*}{FCF trees \& sample\_size}
+& FCF\_t100\_s256 & 0.9640$\pm$0.0022 & 0.2444$\pm$0.0105 & 0.129 \\
+& FCF\_t200\_s256 & 0.9611$\pm$0.0007 & 0.2295$\pm$0.0016 & 0.256 \\
+& FCF\_t200\_s128 & \textbf{0.9667$\pm$0.0009} & \textbf{0.2741$\pm$0.0029} & 0.197 \\
+& FCF\_t200\_s512 & 0.9501$\pm$0.0007 & 0.1938$\pm$0.0021 & 0.419 \\
+\midrule
+\multirow{3}{*}{SCiF $ntry$ \& range penalty}
+& SCiF\_ntry1\_pen0  & 0.9588$\pm$0.0010 & 0.2347$\pm$0.0050 & 0.092 \\
+& SCiF\_ntry10\_pen0 & \textbf{0.9768$\pm$0.0008} & \textbf{0.4977$\pm$0.0114} & 0.191 \\
+& SCiF\_ntry10\_pen1 & 0.9764$\pm$0.0008 & 0.4382$\pm$0.0082 & 0.190 \\
+\midrule
+\multirow{2}{*}{Scoring metric (IF)}
+& IF\_score\_depth   & \textbf{0.9587$\pm$0.0025} & \textbf{0.2958$\pm$0.0106} & 0.033 \\
+& IF\_score\_density & 0.9493$\pm$0.0011 & 0.2629$\pm$0.0033 & 0.033 \\
+\bottomrule
+\end{tabular}
+\end{table*}
+
+% -------------------------
+% Table: Scoring metric effect across all datasets (IF depth vs density)
+% -------------------------
+\begin{table}[t]
+\centering
+\caption{Effect of scoring metric for IF: depth vs density (mean over 10 seeds). Density helps strongly on Satellite/SpamBase/Annthyroid, but is worse on MNIST/Pendigits/Arrhythmia.}
+\label{tab:sens-scoring-metric}
+\small
+\setlength{\tabcolsep}{6pt}
+\renewcommand{\arraystretch}{1.15}
+\begin{tabular}{lcc}
+\toprule
+Dataset & PR-AUC (depth) & PR-AUC (density) \\
+\midrule
+Arrhythmia & 0.4409 & 0.4148 \\
+Pima       & 0.5127 & \textbf{0.5337} \\
+SpamBase   & 0.4884 & \textbf{0.5470} \\
+Satellite  & 0.6410 & \textbf{0.7574} \\
+Pendigits  & \textbf{0.2958} & 0.2629 \\
+Annthyroid & 0.2755 & \textbf{0.3321} \\
+MNIST      & \textbf{0.2944} & 0.2587 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\subsubsection{Findings}
+\paragraph{Capacity is not monotonic}
+Increasing the number of trees and removing the depth limit can yield strong gains (e.g., SpamBase improves from ROC 0.64 to 0.71 and PR 0.49 to 0.55 when moving from 100 trees with depth 8 to 200 trees with unlimited depth), but can also degrade performance (e.g., MNIST decreases from ROC 0.824 to 0.804 under the same change).
+This suggests that additional capacity amplifies the inductive bias of the splitting strategy: it helps when induced partitions align with the anomaly structure, but can drift otherwise.
+
+\paragraph{Subsample size controls locality}
+The subsample size (\texttt{sample\_size}) behaves as a locality knob with a dataset-dependent optimum. For instance, on Arrhythmia, smaller subsamples (64--128) increase PR-AUC relative to 256, while on MNIST and Pendigits too-small subsamples (64--128) reduce both ROC-AUC and PR-AUC.
+Thus, \texttt{sample\_size} changes the effective detection regime rather than only affecting computational cost.
+
+\paragraph{Split geometry has mixed impact}
+Changing from axis-aligned splits to random hyperplane splits ($ndim=2$) can yield modest gains on some datasets (e.g., Arrhythmia PR-AUC increases from 0.441 to 0.476) but can degrade others (e.g., Annthyroid ROC-AUC drops from 0.796 to 0.716).
+This supports the paper's main message that randomized choices should be treated as modeling decisions rather than fixed defaults.
+
+\paragraph{Guidance strength dominates SCiForest behavior}
+The number of candidate splits (\texttt{ntry}) has a large effect in SCiForest: for Pendigits, increasing \texttt{ntry} from 1 to 10 yields a large PR-AUC gain (0.235 $\rightarrow$ 0.498), while for Arrhythmia it reduces performance substantially (PR-AUC 0.534 $\rightarrow$ 0.422).
+The range penalty (\texttt{penalize\_range}) has a smaller effect on most datasets, although it can reduce PR-AUC in rare-outlier settings.
+
+\paragraph{Scoring metric matters}
+Replacing depth-based scoring with density-based scoring for IF yields large improvements on some datasets (e.g., Satellite PR-AUC 0.641 $\rightarrow$ 0.757), while reducing performance on others (e.g., MNIST PR-AUC 0.294 $\rightarrow$ 0.259).
+This indicates that the scoring rule can change the effective notion of ``isolatability'' and should be treated as a modeling choice.
+
+\subsection{Reproducibility}
+\label{sec:reproducibility}
+
+We provide a fully reproducible implementation of all experiments in a public repository accompanying this report.
+All numerical results in Sections~\ref{sec:replication} and~\ref{sec:sensitivity} are generated by the code in the repository, and are exported as CSV files that can be used to re-create the tables.
+
+\subsubsection{Environment}
+Experiments were run using Python (3.10+) with the following main dependencies:
+\texttt{numpy}, \texttt{pandas}, \texttt{scikit-learn}, \texttt{scipy}, and the authors' \texttt{isotree} library (Cortes).
+A \texttt{requirements.txt} file is included to recreate the environment.
+
+\subsubsection{Running the experiments}
+All experiments use fixed seeds \texttt{0..9}. The main scripts are:
+
+\paragraph{Replication runs (Section~\ref{sec:replication})}
+This script evaluates IF/IF-u/EIF/SCiF/SCiF-u/FCF (plus baselines) on each dataset and writes a CSV file:
+\begin{verbatim}
+python replicate_paper.py
+# output: anomaly_detection_results.csv
+\end{verbatim}
+
+\paragraph{Sensitivity runs (Section~\ref{sec:sensitivity})}
+This script performs the parameter sweeps (capacity, sample size, split geometry, guidance, scoring metric) and writes a CSV file:
+\begin{verbatim}
+python sensitivity.py
+# output: parameter_sensitivity.csv
+\end{verbatim}
+
+\subsubsection{Outputs}
+The scripts produce two CSV files:
+\begin{itemize}
+  \item \texttt{anomaly\_detection\_results.csv} --- main replication results.
+  \item \texttt{parameter\_sensitivity.csv} --- sensitivity sweep results.
+\end{itemize}
+All tables shown in the report are obtained by using these CSV files (mean and standard deviation across seeds).
+
+\subsubsection{Determinism}
+To reduce variability, we fix the random seed of each run and average over 10 seeds.
+For LOF/OCSVM baselines, results are deterministic under a fixed preprocessing pipeline and therefore have near-zero variation across repeated runs.
+Runtime measurements report wall-clock time for model fitting and scoring (excluding dataset loading).
