@@ -1,35 +1,50 @@
+
 \section{Implementation}
 %==============================================================================
+
+This section describes the implementation details of the \texttt{isotree} library \cite{isotree}, a high-performance C++ library developed by Cortes that provides unified implementations of all the isolation forest variants discussed in this paper. The library offers Python, R, and C++ interfaces, and serves as the basis for our experimental evaluation.
+
 \subsection{Models defined}
 %==============================================================================
 \begin{itemize}
-    \item \textbf{iForest}: Original Isolation Forest (Liu et al., 2008)
-    \item \textbf{EIF}: Extended Isolation Forest (Hariri et al., 2019)
-    \item \textbf{SCiForest}: Split-Criterion Isolation Forest (Liu et al., 2010)
-    \item \textbf{FCF}: Fair-Cut Forest (Cortes, 2021)
-    \item \textbf{RRCF}: Robust Random Cut Forest (Guha et al., 2016)
+    \item \textbf{iForest}: Original Isolation Forest
+    \item \textbf{EIF}: Extended Isolation Forest
+    \item \textbf{SCiForest}: Split-Criterion Isolation Forest
+    \item \textbf{FCF}: Fair-Cut Forest
 \end{itemize}
 
 \subsection{Multi-threading}
 
-\subsubsection{Tree-level Parallelism}
+The library employs OpenMP for parallelism at two levels:
 
-\begin{lstlisting}[language=C++]
-for (size_t tree = 0; tree < ntrees; tree++) {
-    // Build tree independently
-    build_tree(tree, sample, model);
+\begin{algorithm}[t]
+\caption{Tree-level Parallelism}
+\label{alg:tree-parallel}
+\DontPrintSemicolon
+\KwData{dataset $X$, number of trees $t$, sample size $s$}
+\KwResult{forest $\mathcal{F}$}
+\medskip
+\For{$i = 1$ \textbf{to} $t$ \textbf{in parallel}}{
+    $X_s \gets$ sample($X$, $s$)\;
+    $\mathcal{F}[i] \gets$ \texttt{build\_tree}($X_s$)\;
 }
-\end{lstlisting}
+\Return $\mathcal{F}$
+\end{algorithm}
 
-Each tree is built independently, allowing embarrassingly parallel construction.
+Each tree is built independently, allowing a very strong parallel construction.
 
-\subsubsection{Prediction Parallelism}
-
-\begin{lstlisting}[language=C++]
-for (size_t i = 0; i < n_observations; i++) {
-    scores[i] = score_observation(X[i], forest);
+\begin{algorithm}[t]
+\caption{Prediction Parallelism}
+\label{alg:pred-parallel}
+\DontPrintSemicolon
+\KwData{observations $X$, forest $\mathcal{F}$}
+\KwResult{anomaly scores $S$}
+\medskip
+\For{$i = 1$ \textbf{to} $n$ \textbf{in parallel}}{
+    $S[i] \gets$ \texttt{score\_observation}($X[i]$, $\mathcal{F}$)\;
 }
-\end{lstlisting}
+\Return $S$
+\end{algorithm}
 
 Predictions for different observations are computed in parallel.
 
@@ -37,104 +52,75 @@ Predictions for different observations are computed in parallel.
 
 The library supports:
 \begin{itemize}
-    \item \textbf{-march=native}: Compile-time CPU optimization (AVX, AVX2, etc.)
-    \item \textbf{Cache-friendly data layouts}: Flat vector storage instead of pointer-based trees
-    \item \textbf{Contiguous memory access}: Improves cache locality during tree traversal
+    \item \textbf{Cache-friendly layouts}: Flat vector storage
+    \item \textbf{Contiguous memory}: Improved cache locality
 \end{itemize}
 
 %==============================================================================
 \subsection{Data Structures}
 %==============================================================================
 
-\subsubsection{IsoTree: Standard Node Structure}
+The library uses two main node structures for storing splits.
 
-\begin{lstlisting}[language=C++]
+
+\begin{lstlisting}[language=C++,basicstyle=\ttfamily\small,frame=single,caption={Standard node structure for IF},label={lst:isotree-struct}]
 typedef struct IsoTree {
-    ColType  col_type;           // Numeric, Categorical, or NotUsed
-    size_t   col_num;            // Column index for split
-    double   num_split;          // Split threshold (numeric)
-    std::vector<char> cat_split; // Bitmap for categorical splits
-    int      chosen_cat;         // Selected category
-    size_t   tree_left;          // Index to left child
-    size_t   tree_right;         // Index to right child
-    double   pct_tree_left;      // Fraction going left
-    double   score;              // Depth/score at node
-    double   range_low;          // Range bounds for penalization
+    ColType  col_type; 
+    size_t   col_num;
+    double   num_split;
+    std::vector<char> cat_split;
+    int      chosen_cat;
+    size_t   tree_left;
+    size_t   tree_right;
+    double   pct_tree_left;
+    double   score;
+    double   range_low;
     double   range_high;
-    double   remainder;          // For distance calculations
+    double   remainder;
 } IsoTree;
 \end{lstlisting}
 
-\subsubsection{IsoHPlane: Extended/Hyperplane Node}
-
-For extended isolation forest with hyperplane splits:
-
-\begin{lstlisting}[language=C++]
+\begin{lstlisting}[language=C++,basicstyle=\ttfamily\small,frame=single,caption={Hyperplane node for EIF/FCF},label={lst:isohplane-struct}]
 typedef struct IsoHPlane {
-    std::vector<size_t>   col_num;   // Multiple columns
-    std::vector<ColType>  col_type;  // Type per column
-    std::vector<double>   coef;      // Linear combination coeffs
-    std::vector<double>   mean;      // Standardization means
-    std::vector<double>   fill_val;  // Missing value handling
-    std::vector<std::vector<double>> cat_coef; // Categorical coeffs
+    std::vector<size_t>   col_num;
+    std::vector<ColType>  col_type;
+    std::vector<double>   coef;
+    std::vector<double>   mean;
+    std::vector<double>   fill_val;
+    std::vector<std::vector<double>>
     
-    double   split_point;            // Threshold on combination
-    size_t   hplane_left;            // Left child index
-    size_t   hplane_right;           // Right child index
+    double   split_point;
+    size_t   hplane_left;
+    size_t   hplane_right;
     double   score;
     double   range_low, range_high;
     double   remainder;
 } IsoHPlane;
 \end{lstlisting}
 
-\subsubsection{IsoForest: Complete Model}
 
-\begin{lstlisting}[language=C++]
-typedef struct IsoForest {
-    std::vector<std::vector<IsoTree>> trees;  // Forest storage
-    NewCategAction    new_cat_action;   // Handle new categories
-    CategSplit        cat_split_type;   // Categorical strategy
-    MissingAction     missing_action;   // Missing value handling
-    ScoringMetric     scoring_metric;   // depth, density, etc.
-    double            exp_avg_depth;    // Expected isolation depth
-    double            exp_avg_sep;      // Expected separation
-    size_t            orig_sample_size; // Training sample size
-    bool              has_range_penalty;
-} IsoForest;
-\end{lstlisting}
 
-\subsubsection{ExtIsoForest: Extended Model}
+The forest structures (\texttt{IsoForest} and \texttt{ExtIsoForest}) contain vectors of trees/hyperplanes along with metadata such as the scoring metric, expected average depth, and original sample size.
 
-\begin{lstlisting}[language=C++]
-typedef struct ExtIsoForest {
-    std::vector<std::vector<IsoHPlane>> hplanes;  // Hyperplane trees
-    // Same metadata as IsoForest...
-} ExtIsoForest;
-\end{lstlisting}
+Trees are stored as \textbf{flat vectors} rather than pointer-based nodes for cache efficiency, easy serialization, thread safety, and memory locality.
 
-\subsection{Design Rationale}
-
-\subsubsection{Flat Vector Storage}
-
-Trees are stored as \textbf{flat vectors} rather than traditional pointer-based nodes:
-
-\begin{itemize}
-    \item \textbf{Cache efficiency}: Contiguous memory layout
-    \item \textbf{Serialization}: Easy to save/load models
-    \item \textbf{Thread safety}: No pointer aliasing issues
-    \item \textbf{Memory locality}: Children accessed by index, not pointer
-\end{itemize}
-
-\begin{lstlisting}[language=C++]
-// Tree traversal by index
-size_t current = 0;  // Root
-while (!is_terminal(tree[current])) {
-    if (x[tree[current].col_num] <= tree[current].num_split)
-        current = tree[current].tree_left;
-    else
-        current = tree[current].tree_right;
+\begin{algorithm}[t]
+\caption{Tree Traversal}
+\label{alg:traversal}
+\DontPrintSemicolon
+\KwData{point $x$, tree $T$}
+\KwResult{isolation depth $h$}
+\medskip
+$\text{curr} \gets 0$ \tcp*{Root node}
+\While{$T[\text{curr}]$ is not terminal}{
+    \eIf{$x[T[\text{curr}].\text{col}] \leq T[\text{curr}].\text{split}$}{
+        $\text{curr} \gets T[\text{curr}].\text{left}$\;
+    }{
+        $\text{curr} \gets T[\text{curr}].\text{right}$\;
+    }
 }
-\end{lstlisting}
+\Return $T[\text{curr}].\text{depth}$
+\end{algorithm}
 
 %==============================================================================
 \subsection{Benchmarks}
@@ -142,55 +128,21 @@ while (!is_terminal(tree[current])) {
 
 From the isotree repository benchmarks (100 trees, CovType dataset):
 
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lcccc@{}}
-\toprule
-\textbf{Library} & \textbf{Model} & \textbf{256 samples} & \textbf{1024 samples} & \textbf{10k samples} \\
-\midrule
-isotree & orig & 0.00161s & 0.00631s & 0.0848s \\
-isotree & ext & 0.00326s & 0.0123s & 0.168s \\
-eif & orig & 0.149s & 0.398s & 4.99s \\
-eif & ext & 0.16s & 0.428s & 5.06s \\
-H2O & orig & 9.33s & 11.21s & 14.23s \\
-H2O & ext & 1.06s & 2.07s & 17.31s \\
-scikit-learn & orig & 8.30s & 8.01s & 6.89s \\
-solitude & orig & 32.61s & 34.01s & 41.01s \\
-\bottomrule
+\begin{table}[ht]
+\begin{center}
+\begin{tabular}{l l c c c}
+Lib & Model & 256 & 1024 & 10k \\
+\hline
+isotree & orig & 0.002s & 0.006s & 0.08s \\
+isotree & ext & 0.003s & 0.012s & 0.17s \\
+eif & orig & 0.15s & 0.40s & 4.99s \\
+eif & ext & 0.16s & 0.43s & 5.06s \\
+H2O & orig & 9.33s & 11.2s & 14.2s \\
+sklearn & orig & 8.30s & 8.01s & 6.89s \\
 \end{tabular}
-\caption{Training time comparison on CovType dataset, 100 trees (lower is better)}
+\end{center}
+\label{tab:training-time}
 \end{table}
 
-\textbf{Key observation}: isotree is typically 1--2 orders of magnitude faster than other implementations.
+\textbf{Key observation}: isotree is 1--2 orders of magnitude faster than other implementations.
 
-\subsection{Model Quality (AUROC)}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lcc@{}}
-\toprule
-\textbf{Library} & \textbf{AUROC (defaults)} & \textbf{AUROC (grid search)} \\
-\midrule
-isotree & 0.70 & \textbf{0.84} \\
-eif & -- & 0.714 \\
-scikit-learn & 0.687 & 0.74 \\
-H2O & 0.662 & 0.748 \\
-\bottomrule
-\end{tabular}
-\caption{Outlier detection quality on Satellite dataset (higher is better)}
-\end{table}
-
-\begin{table}[H]
-\centering
-\begin{tabular}{@{}lcc@{}}
-\toprule
-\textbf{Library} & \textbf{AUROC (defaults)} & \textbf{AUROC (grid search)} \\
-\midrule
-isotree & 0.80 & \textbf{0.982} \\
-eif & -- & 0.808 \\
-scikit-learn & 0.836 & 0.836 \\
-H2O & 0.80 & 0.80 \\
-\bottomrule
-\end{tabular}
-\caption{Outlier detection quality on Annthyroid dataset (higher is better)}
-\end{table}
