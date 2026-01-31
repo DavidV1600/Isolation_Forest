@@ -1,0 +1,22 @@
+\section{Conclusion and Future Work}
+\label{sec:conclusion}
+
+\subsection{Conclusion}
+In this project we studied and partially replicated the experimental evaluation from \emph{Revisiting randomized choices in isolation forests} by Cortes (2021).
+Following the paper protocol (unsupervised fit on the full dataset, scoring on the full dataset, and reporting ROC-AUC and PR-AUC averaged over 10 random seeds), we reproduced the core comparison among isolation-forest family variants on a subset of the benchmark datasets (7 out of 9 from the paper's Table~5).
+Our results support the main message of the paper: \emph{randomized choices and split-selection criteria are modeling decisions that can materially change anomaly-detection performance, and the best choice is dataset-dependent.}
+In our subset, we observed that gain-guided methods can generate large improvements on some datasets (e.g., SCiF-u on Pendigits and Annthyroid), while on others they can underperform simpler random-split baselines (e.g., SCiForest variants on SpamBase).
+Likewise, increased capacity (more trees and unlimited depth) is sometimes beneficial but not universally so, reinforcing that ``more capacity'' does not guarantee better anomaly detection under the full-data evaluation protocol.
+
+We also provided a targeted sensitivity study over key hyperparameters controlling capacity (number of trees and depth), locality (subsample size), split geometry ($ndim$), guidance strength ($ntry$ and range penalty), and the scoring rule (depth vs density).
+The sensitivity results show that these hyperparameters affect in a large proportion the detector behavior: subsample size changes ROC/PR (suggesting a shift in locality), moving from axis-aligned to hyperplane splits can improve or degrade performance depending on the dataset, and the strength of guidance in SCiForest (ntry) can generate large gains on some datasets but also lead to degradation on others.
+Overall, the experiments confirm that isolation-forest variants should not be treated as interchangeable implementations; the algorithmic choices discussed in the paper have practical consequences.
+
+\subsection{Future Work}
+\begin{itemize}
+  \item \textbf{Full benchmark replication.} Extend the experimental suite to the complete set of Table~5 datasets (including ALOI and ForestCover) and to a larger portion of the baselines evaluated in the paper. This would enable a closer, table-by-table quantitative reproduction.
+
+  \item \textbf{Implementation-faithful EIF comparison.} The paper reports two EIF implementations (EIF-o and EIF-t). A natural extension is to run both original external implementations and compare them directly under identical preprocessing to isolate implementation effects from algorithmic effects.
+
+  \item \textbf{Hyperparameter selection guidelines.} Use the sensitivity results to derive practical heuristics for selecting \texttt{sample\_size}, depth limits, and guidance parameters as a function of dataset characteristics (dimensionality, outlier rate, feature correlations), and validate these heuristics on held-out datasets.
+\end{itemize}
