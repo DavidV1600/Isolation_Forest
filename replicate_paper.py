@@ -1,15 +1,3 @@
-"""
-Core Experiment Script for Isolation Forest Paper Replication
-Matches methodology from: "Revisiting randomized choices in isolation forests" (Cortes, 2021)
-
-Methodology (paper-style protocol):
-1. Datasets: As per Table 5 in paper.
-2. Training: Unsupervised on full dataset (no split).
-3. Evaluation: Score full dataset; ROC-AUC and PR-AUC on full labels.
-4. Repetitions: 10 random seeds by default (0..9).
-5. Scaling: Applied for distance-based methods (LOF, OCSVM).
-"""
-
 import numpy as np
 import pandas as pd
 from sklearn.datasets import fetch_openml
@@ -20,11 +8,8 @@ import warnings
 import sys
 import os
 
-# Filter warnings
-warnings.filterwarnings('ignore')
 
-# Defaults / config
-BASE_DIR = os.path.abspath(os.path.join(os.path.dirname(__file__), os.pardir))
+BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 DEFAULT_DATASETS = [
     "arrhythmia",
     "pima",
@@ -35,12 +20,12 @@ DEFAULT_DATASETS = [
     "mnist",
 ]
 DEFAULT_SEED_COUNT = range(10)
-DEFAULT_OUTPUT_DIR = "."
+DEFAULT_OUTPUT_DIR = "./outputs"
 
 # Model groups
 ISOTREE_MODELS = {"IF", "IF-u", "EIF", "SCiF", "SCiF-u", "FCF"}
 
-# Import anomaly detection models
+# anomaly detection libraries
 try:
     from isotree import IsolationForest
 except ImportError:
@@ -62,9 +47,7 @@ def load_odds_mat(path: str):
     if X is None or y is None:
         raise ValueError(f"Missing X or y in {path}. Keys: {list(mat.keys())}")
 
-    # y often comes as shape (n,1) float; convert to 1D int {0,1}
     y = np.asarray(y).reshape(-1)
-    # Some ODDS y labels are {1, -1} or {0,1}; normalize to {0,1}
     if set(np.unique(y)).issuperset({-1, 1}):
         y = (y == -1).astype(int)
     else:
@@ -74,17 +57,13 @@ def load_odds_mat(path: str):
     return X, y
 
 def load_dataset(dataset_name):
-    """
-    Load datasets to match Table 5 in the paper.
-    """
     print(f"Loading {dataset_name}...")
 
     if dataset_name == "arrhythmia":
-        # load .mat file from folder
+        # .mat file from folder
         X, y_binary = load_odds_mat(os.path.join(BASE_DIR, "datasets", "arrhythmia.mat"))
             
     elif dataset_name == "pima":
-        # Table 5: 768 rows, 8 cols, 35% outliers
         mat_path = os.path.join(BASE_DIR, "datasets", "pima.mat")
         if os.path.exists(mat_path):
             X, y_binary = load_odds_mat(mat_path)
@@ -95,7 +74,6 @@ def load_dataset(dataset_name):
             y_binary = (y == 'tested_positive').astype(int)
         
     elif dataset_name == "spambase":
-        # Table 5: 4601 rows, 57 cols, 39.4% outliers
         mat_path = os.path.join(BASE_DIR, "datasets", "spambase.mat")
         if os.path.exists(mat_path):
             X, y_binary = load_odds_mat(mat_path)
@@ -120,7 +98,6 @@ def load_dataset(dataset_name):
     else:
         raise ValueError(f"Unknown dataset: {dataset_name}")
     
-    # Impute missing
     if np.any(np.isnan(X)):
         col_means = np.nanmean(X, axis=0)
         inds = np.where(np.isnan(X))
@@ -132,10 +109,6 @@ def load_dataset(dataset_name):
     return X, y_binary
 
 def get_model_factories():
-    """
-    Return dictionary of factories. Each factory takes a 'seed' argument
-    and returns an instantiated model.
-    """
     sample_size = 256
     standard_depth = 8
     factories = {
@@ -153,7 +126,6 @@ def get_model_factories():
         # Extended Isolation Forest variants (ndim=2)
         "EIF": lambda s: IsolationForest(
             ntrees=100, sample_size=sample_size, ndim=2, max_depth=standard_depth,
-            # Keep it RANDOM. Do not turn on gain-based selection.
             prob_pick_pooled_gain=0.0, prob_pick_avg_gain=0.0,
             nthreads=-1, random_seed=s,
         ),
@@ -164,7 +136,7 @@ def get_model_factories():
             penalize_range=True,
             nthreads=-1, random_seed=s
         ),
-        # SCiF-u: 200 trees, unlimited depth (paper variant)
+        # SCiF-u: 200 trees, unlimited depth
         'SCiF-u': lambda s: IsolationForest(
             ntrees=200, sample_size=sample_size, ndim=2, ntry=10, max_depth=None,
             prob_pick_avg_gain=1.0, prob_pick_pooled_gain=0.0,
@@ -189,9 +161,6 @@ def needs_scaling(model_name):
     return model_name.startswith('LOF') or model_name.startswith('OCSVM')
 
 def score_model(model_name, model, X):
-    """
-    Return anomaly scores with higher = more anomalous.
-    """
     if model_name in ISOTREE_MODELS:
         try:
             scores = model.predict(X, output="score")
@@ -210,10 +179,6 @@ def score_model(model_name, model, X):
     return np.asarray(scores).reshape(-1)
 
 def test_model(model_name, model_factory, X, y, seeds):
-    """
-    Test a single model using the paper-style protocol:
-    fit and score on full X for each seed.
-    """
     roc_scores = []
     pr_scores = []
     times = []
@@ -222,19 +187,18 @@ def test_model(model_name, model_factory, X, y, seeds):
     
     for seed in seeds:
         try:
-            # 1. Feature Scaling (Important for LOF/OCSVM)
             if needs_scaling(model_name):
                 scaler = StandardScaler()
                 X_eval = scaler.fit_transform(X)
             else:
                 X_eval = X
 
-            # 2. Instantiate and Fit on full data
+            # fit on full data
             start_time = time.time()
             model = model_factory(seed)
             model.fit(X_eval)
             
-            # 3. Predict scores (Higher = More Anomalous)
+            # predict
             scores = score_model(model_name, model, X_eval)
             if np.unique(scores).size <= 10:
                 print(f"Warning: {model_name} returned few unique scores ({np.unique(scores).size}).", end=' ')
@@ -242,7 +206,7 @@ def test_model(model_name, model_factory, X, y, seeds):
             elapsed = time.time() - start_time
             times.append(elapsed)
             
-            # 4. Score on full dataset
+            # score full dataset
             roc = roc_auc_score(y, scores)
             pr = average_precision_score(y, scores)
             
@@ -251,7 +215,7 @@ def test_model(model_name, model_factory, X, y, seeds):
             
         except Exception as e:
             print(f"[Err seed={seed}: {e}]", end=' ')
-            # If one seed fails, likely all will. Return None to skip.
+            # If one seed fails, all will.
             return None
 
     if not roc_scores:
@@ -318,6 +282,15 @@ def compare_models_on_dataset(dataset_name, seeds, model_subset=None):
             results.append(res)
             
     return results
+
+
+
+
+
+
+
+
+
 
 if __name__ == "__main__":
     datasets = DEFAULT_DATASETS

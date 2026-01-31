@@ -19,7 +19,7 @@ def run_parameter_sensitivity():
     "mnist",
 ]
     seeds = list(range(10))
-    out_csv = "./parameter_sensitivity.csv"
+    out_csv = "./outputs/parameter_sensitivity.csv"
 
     def needs_scaling(model_name: str) -> bool:
         return model_name.startswith("LOF") or model_name.startswith("OCSVM")
@@ -72,7 +72,7 @@ def run_parameter_sensitivity():
 
     sweeps = []
 
-    # Sweep A: IF capacity (trees + depth)  [core paper story: IF vs IF-u]
+    # Sweep A: IF capacity (trees + depth)  if vs if-u
     sweeps.append((
         "IF_depth_and_trees",
         [
@@ -119,7 +119,6 @@ def run_parameter_sensitivity():
     ))
 
     # Sweep C: geometry (ndim=1 vs 2) while keeping random splits
-    # This is the cleanest way to show "extended" splits effect without mixing criteria.
     sweeps.append((
         "Split_geometry_ndim",
         [
@@ -134,7 +133,7 @@ def run_parameter_sensitivity():
         ]
     ))
 
-    # Sweep D: FCF trees + sample_size (already good; keep)
+    # Sweep D: FCF trees + sample_size
     sweeps.append((
         "FCF_trees_and_samplesize",
         [
@@ -158,7 +157,6 @@ def run_parameter_sensitivity():
     ))
 
     # Sweep E: SCiForest sensitivity (ntry + penalize_range)
-    # These are meaningful: ntry controls "how guided", penalize_range affects SCiF behavior.
     sweeps.append((
         "SCiF_ntry_and_range_penalty",
         [
@@ -181,7 +179,6 @@ def run_parameter_sensitivity():
     ))
 
     # Sweep F: scoring metric (depth vs density) for one representative model
-    # This is meaningful and easy to explain: same trees, different scoring rule.
     sweeps.append((
         "Scoring_metric",
         [
@@ -200,7 +197,15 @@ def run_parameter_sensitivity():
         ]
     ))
 
-    # ---- run ----
+
+
+
+
+
+
+
+
+    # RUN ALL SWEEPS ACROSS DATASETS
     rows = []
 
     for ds in datasets:
@@ -229,6 +234,19 @@ def run_parameter_sensitivity():
     df.to_csv(out_csv, index=False)
     print(f"\nSaved: {out_csv}")
     return df
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 if __name__ == "__main__":
